@@ -14,7 +14,6 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'exhibitors_code_system'
 );
 $myUpdateChecker->getVcsApi()->enableReleaseAssets();
-$myUpdateChecker->setAuthentication('eb69e2c2ed95f4f4a94c52150aef25e337c3ad98');
 
 class PageTemplater {
 
