@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Form Exhibitors Code System 3.6
+Plugin Name: Form Exhibitors Code System 3.7
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 3.6
+Version: 3.7
 Author: Szymon Kaluga
 Author URI: http://skaluga.pl/
 */
