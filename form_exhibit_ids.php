@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Form Exhibitors Code System 3.8
+Plugin Name: Exhibitors Code System 4.0 (trade_fair_desc)
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
 Version: 3.8
-Author: Szymon Kaluga
-Author URI: http://skaluga.pl/
+Author: pwe-dev
+Author URI: https://warsawexpo.eu
 */
 
 include( plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php');
