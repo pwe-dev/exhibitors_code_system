@@ -281,7 +281,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p>Wpisz nazwę targów <br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name");
 
-		add_settings_field("trade_fair_desc", "Opis targów Targów<hr><p>Wpisz opis targów <br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc", "Opis targów<hr><p>Wpisz opis targów <br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc");
 
 		add_settings_field("trade_fair_datetotimer", "Data targów do licznika<hr><p>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
@@ -323,10 +323,10 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		add_settings_field("third_day_ru", "Trzeci dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<br>[third_day_ru]</p>", "display_third_day_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "third_day_ru");
 
-		add_settings_field("super_shortcode_1", "Shortcode dodatkowy 1 (RU)<hr><p>Dodatkowy shortcode na cokolwiek 1<br>[super_shortcode_1]</p>", "display_super_shortcode_1", "code-checker", "code_checker");      
+		add_settings_field("super_shortcode_1", "Shortcode dodatkowy 1<hr><p>Dodatkowy shortcode na cokolwiek 1<br>[super_shortcode_1]</p>", "display_super_shortcode_1", "code-checker", "code_checker");      
 		register_setting("code_checker", "super_shortcode_1");
 
-		add_settings_field("super_shortcode_2", "Shortcode dodatkowy 2 (RU)<hr><p>Dodatkowy shortcode na cokolwiek 2<br>[super_shortcode_2]</p>", "display_super_shortcode_2", "code-checker", "code_checker");      
+		add_settings_field("super_shortcode_2", "Shortcode dodatkowy 2<hr><p>Dodatkowy shortcode na cokolwiek 2<br>[super_shortcode_2]</p>", "display_super_shortcode_2", "code-checker", "code_checker");      
 		register_setting("code_checker", "super_shortcode_2");
 
 		add_settings_field("code_prefix", "Code Prefix", "display_code_prefix", "code-checker", "code_checker");
