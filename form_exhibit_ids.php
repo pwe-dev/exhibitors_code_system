@@ -230,6 +230,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 									<p><center><strong>Zasady tworzenia formularza VIP są identyczne jak dla odwiedzającego z kodem!</strong></center></p>
 									<p>Licznik wszystkich rejestracji dodajemy za pomocą shortcoda <strong><code>[visitors_counter]</code></strong> - można go dodać wszędzie gdzie jest <strong>edytorze tekstowym</strong>.</p>
 									<p>Nazwę targów dodajemy za pomocą shortcoda <strong><code>[trade_fair_name]</code></strong></p>
+									<p>Opis targów dodajemy za pomocą shortcoda <strong><code>[trade_fair_desc]</code></strong></p>
 									<p>Datę targów dodajemy za pomocą shortcoda <strong><code>[trade_fair_date]</code></strong></p>
 									<p>Datę targów (ENG) dodajemy za pomocą shortcoda <strong><code>[trade_fair_date_eng]</code></strong></p>
 									<p>Datę targów (RU) dodajemy za pomocą shortcoda <strong><code>[trade_fair_date_ru]</code></strong></p>
@@ -275,13 +276,15 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
     function display_options()
     {
-
 		add_settings_section("code_checker", "Code System Checker", "display_header_options_content", "code-checker");
 		
 		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p>Wpisz nazwę targów <br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name");
 
-		add_settings_field("trade_fair_datetotimer", "Data targow do licznika<hr><p>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc", "Opis targów Targów<hr><p>Wpisz opis targów <br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_desc");
+
+		add_settings_field("trade_fair_datetotimer", "Data targów do licznika<hr><p>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_datetotimer");
 
 		add_settings_field("trade_fair_date", "Data Targów<hr><p>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
@@ -319,6 +322,12 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
 		add_settings_field("third_day_ru", "Trzeci dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<br>[third_day_ru]</p>", "display_third_day_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "third_day_ru");
+
+		add_settings_field("super_shortcode_1", "Shortcode dodatkowy 1 (RU)<hr><p>Dodatkowy shortcode na cokolwiek 1<br>[super_shortcode_1]</p>", "display_super_shortcode_1", "code-checker", "code_checker");      
+		register_setting("code_checker", "super_shortcode_1");
+
+		add_settings_field("super_shortcode_2", "Shortcode dodatkowy 2 (RU)<hr><p>Dodatkowy shortcode na cokolwiek 2<br>[super_shortcode_2]</p>", "display_super_shortcode_2", "code-checker", "code_checker");      
+		register_setting("code_checker", "super_shortcode_2");
 
 		add_settings_field("code_prefix", "Code Prefix", "display_code_prefix", "code-checker", "code_checker");
 		register_setting("code_checker", "code_prefix");
@@ -573,6 +582,18 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	
+	function display_trade_fair_desc()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_desc" id="trade_fair_desc" value="<?php echo get_option('trade_fair_desc'); ?>" />
+				<p>"np. Międzynarodowe targi bla bla bla"</p>
+			</div>
+        <?php
+	}
+
+
 	function display_trade_fair_date()
     {
         ?>
@@ -703,6 +724,27 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	function display_super_shortcode_1()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="super_shortcode_1" id="super_shortcode_1" value="<?php echo get_option('super_shortcode_1'); ?>" />
+				<p>"np. cokolwiek"</p>
+			</div>
+        <?php
+	}
+
+	function display_super_shortcode_2()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="super_shortcode_2" id="super_shortcode_2" value="<?php echo get_option('super_shortcode_2'); ?>" />
+				<p>"np. cokolwiek"</p>
+			</div>
+        <?php
+	}
+
+
 	add_action("admin_init", "display_options");
 	
 	// Visitor Counter
@@ -723,6 +765,13 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_name', 'show_trade_fair_name' );
+
+	// Desc of the fair
+	function show_trade_fair_desc(){
+		$result = get_option('trade_fair_desc');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_desc', 'show_trade_fair_desc' );
 	
 	//datetotimer
 	function show_trade_fair_datetotimer(){
@@ -814,6 +863,21 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'third_day_ru', 'show_third_day_ru' );
+
+	
+	// super shortcode 1
+	function show_super_shortcode_1(){
+		$result = get_option('super_shortcode_1');
+		return $result;
+	}
+	add_shortcode( 'super_shortcode_1', 'show_super_shortcode_1' );
+
+	// super shortcode 2
+	function show_super_shortcode_2(){
+		$result = get_option('super_shortcode_2');
+		return $result;
+	}
+	add_shortcode( 'super_shortcode_2', 'show_super_shortcode_2' );
 
 	//* Shortcode to display form success on another page 
 	add_shortcode('form_data', 'form_data_function'); 
