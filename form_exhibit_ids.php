@@ -4,7 +4,7 @@ Plugin Name: Exhibitors Code System 4.0 (trade_fair_desc)
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
 Version: 4.0
 Author: pwe-dev
-Author URI: https://warsawexpo.eu
+Author URI: https://github.com/pwe-dev
 */
 
 include( plugin_dir_path( __FILE__ ) . 'plugin-update-checker/plugin-update-checker.php');
