@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Exhibitors Code System 4.1 (trade_fair_desc)
+Plugin Name: Exhibitors Code System 4.2 (trade_fair_desc)
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.1
+Version: 4.2
 Author: pwe-dev
 Author URI: https://github.com/pwe-dev
 */
@@ -278,11 +278,23 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
     {
 		add_settings_section("code_checker", "Code System Checker", "display_header_options_content", "code-checker");
 		
-		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p>Wpisz nazwę targów <br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p>Wpisz nazwę targów PL<br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name");
+		
+		add_settings_field("trade_fair_name_eng", "Nazwa Targów<hr><p>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_name_eng");
 
-		add_settings_field("trade_fair_desc", "Opis targów<hr><p>Wpisz opis targów <br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name_ru", "Nazwa Targów<hr><p>Wpisz nazwę targów RU<br>[trade_fair_name_ru]</p>", "display_trade_fair_name_ru", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_name_ru");
+
+		add_settings_field("trade_fair_desc", "Opis targów<hr><p>Wpisz opis targów PL<br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc");
+
+		add_settings_field("trade_fair_desc_eng", "Opis targów<hr><p>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_desc_eng");
+
+		add_settings_field("trade_fair_desc_ru", "Opis targów<hr><p>Wpisz opis targów RU<br>[trade_fair_desc_ru]</p>", "display_trade_fair_desc_ru", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_desc_ru");
 
 		add_settings_field("trade_fair_datetotimer", "Data targów do licznika<hr><p>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_datetotimer");
@@ -582,12 +594,52 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	function display_trade_fair_name_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_name_eng" id="trade_fair_name_eng" value="<?php echo get_option('trade_fair_name_eng'); ?>" />
+				<p>"np. Warsaw Fleet Expo"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_name_ru()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_name_ru" id="trade_fair_name_ru" value="<?php echo get_option('trade_fair_name_ru'); ?>" />
+				<p>"np. Warsaw Fleet Expo"</p>
+			</div>
+        <?php
+	}
+
 	
 	function display_trade_fair_desc()
     {
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_desc" id="trade_fair_desc" value="<?php echo get_option('trade_fair_desc'); ?>" />
+				<p>"np. Międzynarodowe targi bla bla bla"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_desc_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_desc_eng" id="trade_fair_desc_eng" value="<?php echo get_option('trade_fair_desc_eng'); ?>" />
+				<p>"np. Międzynarodowe targi bla bla bla"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_desc_ru()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_desc_ru" id="trade_fair_desc_ru" value="<?php echo get_option('trade_fair_desc_ru'); ?>" />
 				<p>"np. Międzynarodowe targi bla bla bla"</p>
 			</div>
         <?php
@@ -766,12 +818,36 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	}
 	add_shortcode( 'trade_fair_name', 'show_trade_fair_name' );
 
+	function show_trade_fair_name_eng(){
+		$result = get_option('trade_fair_name_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_name_eng', 'show_trade_fair_name_eng' );
+
+	function show_trade_fair_name_ru(){
+		$result = get_option('trade_fair_name_ru');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_name_ru', 'show_trade_fair_name_ru' );
+
 	// Desc of the fair
 	function show_trade_fair_desc(){
 		$result = get_option('trade_fair_desc');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_desc', 'show_trade_fair_desc' );
+
+	function show_trade_fair_desc_eng(){
+		$result = get_option('trade_fair_desc_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_desc_eng', 'show_trade_fair_desc_eng' );
+
+	function show_trade_fair_desc_ru(){
+		$result = get_option('trade_fair_desc_ru');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_desc_ru', 'show_trade_fair_desc_ru' );
 	
 	//datetotimer
 	function show_trade_fair_datetotimer(){

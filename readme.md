@@ -74,5 +74,4 @@ Enjoy!
 * [jQuery](https://jquery.com/) - JavaSript Library
 
 ## Authors
-
-* **Szymon Kaluga** - [github](https://github.com/szymoff) - [website](http://skaluga.pl) 
+#PWE
