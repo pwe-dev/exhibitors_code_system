@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Exhibitors Code System 4.3 (trade_fair_desc)
+Plugin Name: Exhibitors Code System 4.4 (trade_fair_desc)
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.3
+Version: 4.4
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -303,6 +303,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_enddata");
 		/*END */
+
 		add_settings_field("trade_fair_date", "Data Targów<hr><p>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date");
 
@@ -311,6 +312,14 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
 		add_settings_field("trade_fair_date_ru", "Data Targów (RU)<hr><p>Wpisz datę targów (RU)<br>[trade_fair_date_ru]</p>", "display_trade_fair_date_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_ru");
+
+		/*Dodane przez Marka*/
+        add_settings_field("trade_fair_branzowy", "Data dni branżowych targów<hr><p>Wpisz date dni branżowych<br>[trade_fair_branzowy]</p>", "display_trade_fair_branzowy", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_branzowy");
+
+        add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_branzowy_eng");
+		/*END */
 
 		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<br>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
 		register_setting("code_checker", "first_day");
@@ -395,6 +404,11 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
 		add_settings_field("users_multiplier", "Mnożnik<hr><p>Wpisz liczbę przez którą przemnożysz wszystkich zareejstrowanych użytkowników</p>", "display_users_multiplier", "code-checker", "code_checker");      
 		register_setting("code_checker", "users_multiplier");
+		
+		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_actualyear", "Aktualny rok<hr><p>Nie zminiać<br>[trade_fair_actualyear]</p>", "display_trade_fair_actualyear", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_actualyear");
+		/*END */
     }
 
     function csv_file_upload($options)
@@ -588,6 +602,18 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	/*Dodane przez Marka*/
+	function display_trade_fair_actualyear()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_actualyear" id="trade_fair_actualyear" value="<?php echo date('Y') ?>" disabled/>
+				<p>"Automatycznie pobierany aktulny rok"</p>
+			</div>
+        <?php
+	}
+	/*END*/
+
 	function display_trade_fair_name()
     {
         ?>
@@ -702,6 +728,28 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	/*Dodane przez Marka*/
+	function display_trade_fair_branzowy()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_branzowy" id="trade_fair_branzowy" value="<?php echo get_option('trade_fair_branzowy'); ?>" />
+				<p>"np. 24-26 marca 2022"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_branzowy_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
+				<p>"np. March 24-26, 2022"</p>
+			</div>
+        <?php
+	}
+	/*END*/
+	
 	function display_first_day()
     {
         ?>
@@ -828,6 +876,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	add_shortcode( 'visitors_counter', 'show_visitors' );
 
 	// Name of the fair
+
 	function show_trade_fair_name(){
 		$result = get_option('trade_fair_name');
 		return $result;
@@ -900,6 +949,22 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date_ru', 'show_trade_fair_date_ru' );
+	
+	/*Dodane przez Marka*/ 
+	/*dzien branzowy*/
+	function show_trade_fair_branzowy(){
+		$result = get_option('trade_fair_branzowy');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_branzowy', 'show_trade_fair_branzowy' );
+
+	/*dzien branzowy ENG*/
+	function show_trade_fair_branzowy_eng(){
+		$result = get_option('trade_fair_branzowy_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
+	/*END*/
 	
 	// First day 
 	function show_first_day(){
@@ -978,6 +1043,13 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'super_shortcode_2', 'show_super_shortcode_2' );
+
+	// Actual Year dodane przez Marka
+	function show_trade_fair_actualyear(){
+		$result = get_option('trade_fair_actualyear');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_actualyear', 'show_trade_fair_actualyear' );
 
 	//* Shortcode to display form success on another page 
 	add_shortcode('form_data', 'form_data_function'); 
