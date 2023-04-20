@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Exhibitors Code System 4.5 (trade_fair_desc)
+Plugin Name: Exhibitors Code System
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5
+Version: 4.5.1
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
