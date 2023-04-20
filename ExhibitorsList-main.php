@@ -9,8 +9,8 @@ Author URI: http://skaluga.pl/
 
 function exhibitors_list_styles_and_scripts() 
 {
-    wp_enqueue_style( 'exhibitors_list_css', plugins_url( 'ExhibitorsList/exhibitors_list_css', __FILE__ ) );
-    wp_enqueue_script( 'exhibitors_list_js', plugins_url( 'ExhibitorsList/exhibitors_list_js', __FILE__ ) , array( 'jquery' ) );
+    wp_enqueue_style( 'exhibitors_list_css', plugins_url( 'ExhibitorsList/exhibitors_list.css', __FILE__ ) );
+    wp_enqueue_script( 'exhibitors_list_js', plugins_url( 'ExhibitorsList/exhibitors_list.js', __FILE__ ) , array( 'jquery' ) );
 }add_action('wp_enqueue_scripts', 'exhibitors_list_styles_and_scripts'); 
 
 // Register Taxonomy
