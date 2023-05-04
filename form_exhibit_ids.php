@@ -1046,7 +1046,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
 	// Actual Year dodane przez Marka
 	function show_trade_fair_actualyear(){
-		$result = get_option('trade_fair_actualyear');
+		$result = date('Y');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_actualyear', 'show_trade_fair_actualyear' );
