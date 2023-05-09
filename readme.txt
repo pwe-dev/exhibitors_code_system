@@ -55,12 +55,16 @@ Answer to foo bar dilemma.
 
 == Changelog ==
 
+= 4.5.5 =
+* Added:
+    trade_fair_opisbranzowy
+    
 = 4.5.4 =
 * Added:
     trade_fair_enddata
     trade_fair_branzowy
     trade_fair_actualyear
-    
+   
 = 1.0 =
 * A change since the previous version.
 * Another change.

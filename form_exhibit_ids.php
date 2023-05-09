@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.4
+Version: 4.5.5
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -319,6 +319,12 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
         add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_branzowy_eng");
+
+		add_settings_field("trade_fair_opisbranzy", "Krótki opis branży <br>[trade_fair_opisbranzy]</p>", "display_trade_fair_opisbranzy", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_opisbranzy");
+
+		add_settings_field("trade_fair_opisbranzy_eng", "Krótki opis branży ENG <br>[trade_fair_opisbranzy_eng]</p>", "display_trade_fair_opisbranzy_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_opisbranzy_eng");
 		/*END */
 
 		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<br>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
@@ -602,18 +608,6 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
-	/*Dodane przez Marka*/
-	function display_trade_fair_actualyear()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_actualyear" id="trade_fair_actualyear" value="<?php echo date('Y') ?>" disabled/>
-				<p>"Automatycznie pobierany aktulny rok"</p>
-			</div>
-        <?php
-	}
-	/*END*/
-
 	function display_trade_fair_name()
     {
         ?>
@@ -705,7 +699,58 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 			</div>
         <?php
 	}
+
+	function display_trade_fair_actualyear()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_actualyear" id="trade_fair_actualyear" value="<?php echo date('Y') ?>" disabled/>
+				<p>"Automatycznie pobierany aktulny rok"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_branzowy()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_branzowy" id="trade_fair_branzowy" value="<?php echo get_option('trade_fair_branzowy'); ?>" />
+				<p>"np. 24-26 marca 2022"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_branzowy_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
+				<p>"np. March 24-26, 2022"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_opisbranzy()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_opisbranzy" id="trade_fair_opisbranzy" value="<?php echo get_option('trade_fair_opisbranzy'); ?>" />
+				<p>"np. uprawa i przetwórstwo warzyw"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_opisbranzy_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_opisbranzy_eng" id="trade_fair_opisbranzy_eng" value="<?php echo get_option('trade_fair_opisbranzy_eng'); ?>" />
+				<p>"np. cultivation and processing of vegetables"</p>
+			</div>
+        <?php
+	}
 	/*END*/
+
 
 	function display_trade_fair_date_eng()
     {
@@ -727,28 +772,6 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 			</div>
         <?php
 	}
-
-	/*Dodane przez Marka*/
-	function display_trade_fair_branzowy()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_branzowy" id="trade_fair_branzowy" value="<?php echo get_option('trade_fair_branzowy'); ?>" />
-				<p>"np. 24-26 marca 2022"</p>
-			</div>
-        <?php
-	}
-
-	function display_trade_fair_branzowy_eng()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
-				<p>"np. March 24-26, 2022"</p>
-			</div>
-        <?php
-	}
-	/*END*/
 	
 	function display_first_day()
     {
@@ -964,6 +987,20 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
+
+	/*opis branzowy*/
+	function show_trade_fair_opisbranzowy(){
+		$result = get_option('trade_fair_opisbranzowy');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_opisbranzowy', 'show_trade_fair_opisbranzowy' );
+
+	/*opis branzowy ENG*/
+	function show_trade_fair_opisbranzowy_eng(){
+		$result = get_option('trade_fair_opisbranzowy_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_opisbranzowy_eng', 'show_trade_fair_opisbranzowy_eng' );
 	/*END*/
 	
 	// First day 
