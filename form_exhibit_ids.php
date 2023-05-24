@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.5
+Version: 4.5.6
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -314,7 +314,19 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		register_setting("code_checker", "trade_fair_date_ru");
 
 		/*Dodane przez Marka*/
-        add_settings_field("trade_fair_branzowy", "Data dni branżowych targów<hr><p>Wpisz date dni branżowych<br>[trade_fair_branzowy]</p>", "display_trade_fair_branzowy", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_1stbuildday");
+
+        add_settings_field("trade_fair_2ndbuildday", "Data drugiego dnia zabudowy<hr><p>Wpisz date drugiego dnia zabudowy<br>[trade_fair_2ndbuildday]</p>", "display_trade_fair_2ndbuildday", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_2ndbuildday");
+
+		add_settings_field("trade_fair_1stdismantlday", "Data pierwszego dnia rozbiórki<hr><p>Wpisz date pierwszego dnia rozbiórki zabudowy<br>[trade_fair_1stdismantlday]</p>", "display_trade_fair_1stdismantlday", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_1stdismantlday");
+
+        add_settings_field("trade_fair_2nddismantlday", "Data drugiego dnia rozbiórki<hr><p>Wpisz date drugiego dnia rozbiórki zabudowy<br>[trade_fair_2nddismantlday]</p>", "display_trade_fair_2nddismantlday", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_2nddismantlday");
+
+		add_settings_field("trade_fair_branzowy", "Data dni branżowych targów<hr><p>Wpisz date dni branżowych<br>[trade_fair_branzowy]</p>", "display_trade_fair_branzowy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_branzowy");
 
         add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
@@ -325,6 +337,12 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
 		add_settings_field("trade_fair_opisbranzy_eng", "Krótki opis branży ENG <br>[trade_fair_opisbranzy_eng]</p>", "display_trade_fair_opisbranzy_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_opisbranzy_eng");
+
+		add_settings_field("trade_fair_facebook", "Adres wydarzenia na facebook <br>[trade_fair_facebook]</p>", "display_trade_fair_facebook", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_facebook");
+
+		add_settings_field("trade_fair_instagram", "Adres wydarzenia na instagram <br>[trade_fair_instagram]</p>", "display_trade_fair_instagram", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_instagram");
 		/*END */
 
 		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<br>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
@@ -412,6 +430,9 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		register_setting("code_checker", "users_multiplier");
 		
 		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_domainadress", "Adres strony<hr><p>Nie zmieniać<br>[trade_fair_domainadress]</p>", "display_trade_fair_domainadress", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_domainadress");
+
 		add_settings_field("trade_fair_actualyear", "Aktualny rok<hr><p>Nie zminiać<br>[trade_fair_actualyear]</p>", "display_trade_fair_actualyear", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_actualyear");
 		/*END */
@@ -700,6 +721,46 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	function display_trade_fair_1stbuildday()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_1stbuildday" id="trade_fair_1stbuildday" value="<?php echo get_option('trade_fair_1stbuildday'); ?>" />
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' w godz. 8:00-18:00'?> (D:M:Y w godz. H:M) "</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_2ndbuildday()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_2ndbuildday" id="trade_fair_2ndbuildday" value="<?php echo get_option('trade_fair_2ndbuildday'); ?>" />
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' w godz. 8:00-20:00'?> (D:M:Y w godz. H:M) "</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_1stdismantlday()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_1stdismantlday" id="trade_fair_1stdismantlday" value="<?php echo get_option('trade_fair_1stdismantlday'); ?>" />
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' w godz. 17:00-24:00'?> (D:M:Y w godz. H:M) "</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_2nddismantlday()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_2nddismantlday" id="trade_fair_2nddismantlday" value="<?php echo get_option('trade_fair_2nddismantlday'); ?>" />
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' +1 day')) . ' w godz. 8:00-12:00'?> (D:M:Y w godz. H:M) "</p>
+			</div>
+        <?php
+	}
+
 	function display_trade_fair_actualyear()
     {
         ?>
@@ -746,6 +807,35 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 			<div class="form-field">
 				<input type="text" name="trade_fair_opisbranzy_eng" id="trade_fair_opisbranzy_eng" value="<?php echo get_option('trade_fair_opisbranzy_eng'); ?>" />
 				<p>"np. cultivation and processing of vegetables"</p>
+			</div>
+        <?php
+	}
+	function display_trade_fair_domainadress()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_domainadress" id="trade_fair_domainadress" value="<?php echo $_SERVER['HTTP_HOST']; ?>" disabled/>
+				<p>"Automatycznie pobierany adres strony"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_facebook()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_facebook" id="trade_fair_facebook" value="<?php echo get_option('trade_fair_facebook'); ?>"/>
+				<p>"https://facebook/..."</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_instagram()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_instagram" id="trade_fair_instagram" value="<?php echo get_option('trade_fair_instagram'); ?>"/>
+				<p>"https://instagram/..."</p>
 			</div>
         <?php
 	}
@@ -937,19 +1027,60 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	}
 	add_shortcode( 'trade_fair_desc_ru', 'show_trade_fair_desc_ru' );
 	
-	//datetotimer
+	// datetotimer
 	function show_trade_fair_datetotimer(){
 		$result = get_option('trade_fair_datetotimer');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_datetotimer', 'show_trade_fair_datetotimer' );
 
-    /*Dodane przez Marka* enddata*/
+    /*Dodane przez Marka*/ 
+	// enddata
 	function show_trade_fair_enddata(){
 		$result = get_option('trade_fair_enddata');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_enddata', 'show_trade_fair_enddata' );
+
+	// 1stbuildday
+	function show_trade_fair_1stbuildday(){
+		$result = get_option('trade_fair_1stbuildday');
+		if (empty($result)) {
+			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' w godz. 8:00-18:00';
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_1stbuildday', 'show_trade_fair_1stbuildday' );
+	
+	// 2ndbuildday
+	function show_trade_fair_2ndbuildday(){
+		$result = get_option('trade_fair_2ndbuildday');
+		if (empty($result)) {
+			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' w godz. 8:00-20:00';
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_2ndbuildday', 'show_trade_fair_2ndbuildday' );
+
+	// 1stdismantlday
+	function show_trade_fair_1stdismantlday(){
+		$result = get_option('trade_fair_1stdismantlday');
+		if (empty($result)) {
+			return date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' w godz. 17:00–24:00';
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_1stdismantlday', 'show_trade_fair_1stdismantlday' );
+	
+	// 2nddismantlday
+	function show_trade_fair_2nddismantlday(){
+		$result = get_option('trade_fair_2nddismantlday');
+		if (empty($result)) {
+			return date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' -1 day')) . ' w godz. 8:00–12:00';
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_2nddismantlday', 'show_trade_fair_2nddismantlday' );
 	/*END*/
 	
 	// Date of the fair
@@ -1001,6 +1132,27 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_opisbranzowy_eng', 'show_trade_fair_opisbranzowy_eng' );
+
+	/*adres facebook*/
+	function show_trade_fair_facebook(){
+		$result = get_option('trade_fair_facebook');
+		if (empty($result)) {
+			return "https://warsawexpo.eu";
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_facebook', 'show_trade_fair_facebook' );
+
+	/*adres instagram*/
+	function show_trade_fair_instagram(){
+		$result = get_option('trade_fair_instagram');
+		if (empty($result)) {
+			return "https://warsawexpo.eu";
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_instagram', 'show_trade_fair_instagram' );
+	/*END*/
 	/*END*/
 	
 	// First day 
@@ -1080,6 +1232,13 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'super_shortcode_2', 'show_super_shortcode_2' );
+
+	// Adres strony dodane przez Marka
+	function show_trade_fair_domainadress(){
+		$result = $_SERVER['HTTP_HOST'];
+		return $result;
+	}
+	add_shortcode( 'trade_fair_domainadress', 'show_trade_fair_domainadress' );
 
 	// Actual Year dodane przez Marka
 	function show_trade_fair_actualyear(){

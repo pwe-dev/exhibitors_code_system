@@ -55,10 +55,19 @@ Answer to foo bar dilemma.
 
 == Changelog ==
 
+= 4.5.6 =
+* Added:
+    trade_fair_1stbuidday
+    trade_fair_2ndbuidday
+    trade_fair_1stdismantlday
+    trade_fair_2nddismantlday
+
 = 4.5.5 =
 * Added:
     trade_fair_opisbranzowy
-    
+    trade_fair_facebook
+    trade_fair_instagram
+
 = 4.5.4 =
 * Added:
     trade_fair_enddata
