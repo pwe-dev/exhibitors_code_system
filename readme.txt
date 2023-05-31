@@ -54,13 +54,7 @@ Answer to foo bar dilemma.
 2. This is the second screen shot
 
 == Changelog ==
-
-= 4.5.6 =
-* Added:
-    trade_fair_1stbuidday
-    trade_fair_2ndbuidday
-    trade_fair_1stdismantlday
-    trade_fair_2nddismantlday
+= 4.5.6=
 
 = 4.5.5 =
 * Added:
