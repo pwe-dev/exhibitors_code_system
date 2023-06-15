@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.6
+Version: 4.5.7
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -726,7 +726,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_1stbuildday" id="trade_fair_1stbuildday" value="<?php echo get_option('trade_fair_1stbuildday'); ?>" />
-				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' w godz. 8:00-18:00'?> (D:M:Y w godz. H:M) "</p>
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' 8:00-18:00'?> (D:M:Y H:M) "</p>
 			</div>
         <?php
 	}
@@ -736,7 +736,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_2ndbuildday" id="trade_fair_2ndbuildday" value="<?php echo get_option('trade_fair_2ndbuildday'); ?>" />
-				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' w godz. 8:00-20:00'?> (D:M:Y w godz. H:M) "</p>
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' 8:00-20:00'?> (D:M:Y H:M) "</p>
 			</div>
         <?php
 	}
@@ -746,7 +746,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_1stdismantlday" id="trade_fair_1stdismantlday" value="<?php echo get_option('trade_fair_1stdismantlday'); ?>" />
-				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' w godz. 17:00-24:00'?> (D:M:Y w godz. H:M) "</p>
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' 17:00-24:00'?> (D:M:Y H:M) "</p>
 			</div>
         <?php
 	}
@@ -756,7 +756,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_2nddismantlday" id="trade_fair_2nddismantlday" value="<?php echo get_option('trade_fair_2nddismantlday'); ?>" />
-				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' +1 day')) . ' w godz. 8:00-12:00'?> (D:M:Y w godz. H:M) "</p>
+				<p>"wartość domyślna -> <?php echo date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' +1 day')) . ' 8:00-12:00'?> (D:M:Y H:M) "</p>
 			</div>
         <?php
 	}
@@ -1046,7 +1046,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	function show_trade_fair_1stbuildday(){
 		$result = get_option('trade_fair_1stbuildday');
 		if (empty($result)) {
-			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' w godz. 8:00-18:00';
+			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -2 day')) . ' 8:00-18:00';
 		}
 		return $result;
 	}
@@ -1056,7 +1056,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	function show_trade_fair_2ndbuildday(){
 		$result = get_option('trade_fair_2ndbuildday');
 		if (empty($result)) {
-			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' w godz. 8:00-20:00';
+			return date('d.m.Y', strtotime(get_option('trade_fair_datetotimer') . ' -1 day')) . ' 8:00-20:00';
 		}
 		return $result;
 	}
@@ -1066,7 +1066,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	function show_trade_fair_1stdismantlday(){
 		$result = get_option('trade_fair_1stdismantlday');
 		if (empty($result)) {
-			return date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' w godz. 17:00–24:00';
+			return date('d.m.Y', strtotime(get_option('trade_fair_enddata'))) . ' 17:00–24:00';
 		}
 		return $result;
 	}
@@ -1076,7 +1076,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	function show_trade_fair_2nddismantlday(){
 		$result = get_option('trade_fair_2nddismantlday');
 		if (empty($result)) {
-			return date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' -1 day')) . ' w godz. 8:00–12:00';
+			return date('d.m.Y', strtotime(get_option('trade_fair_enddata') . ' +1 day')) . ' 8:00–12:00';
 		}
 		return $result;
 	}
