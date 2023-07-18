@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.7
+Version: 4.5.8
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -810,6 +810,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 			</div>
         <?php
 	}
+	
 	function display_trade_fair_domainadress()
     {
         ?>
@@ -1120,18 +1121,18 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
 
 	/*opis branzowy*/
-	function show_trade_fair_opisbranzowy(){
-		$result = get_option('trade_fair_opisbranzowy');
+	function show_trade_fair_opisbranzy(){
+		$result = get_option('trade_fair_opisbranzy');
 		return $result;
 	}
-	add_shortcode( 'trade_fair_opisbranzowy', 'show_trade_fair_opisbranzowy' );
+	add_shortcode( 'trade_fair_opisbranzy', 'show_trade_fair_opisbranzy' );
 
 	/*opis branzowy ENG*/
-	function show_trade_fair_opisbranzowy_eng(){
-		$result = get_option('trade_fair_opisbranzowy_eng');
+	function show_trade_fair_opisbranzy_eng(){
+		$result = get_option('trade_fair_opisbranzy_eng');
 		return $result;
 	}
-	add_shortcode( 'trade_fair_opisbranzowy_eng', 'show_trade_fair_opisbranzowy_eng' );
+	add_shortcode( 'trade_fair_opisbranzy_eng', 'show_trade_fair_opisbranzy_eng' );
 
 	/*adres facebook*/
 	function show_trade_fair_facebook(){
