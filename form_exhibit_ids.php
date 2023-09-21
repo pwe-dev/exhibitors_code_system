@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.8
+Version: 4.5.9
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -776,7 +776,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_branzowy" id="trade_fair_branzowy" value="<?php echo get_option('trade_fair_branzowy'); ?>" />
-				<p>"np. 24-26 marca 2022"</p>
+				<p>"wartość domyślna -> <?php echo get_option('trade_fair_date')?> "</p>
 			</div>
         <?php
 	}
@@ -786,7 +786,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
-				<p>"np. March 24-26, 2022"</p>
+				<p>"wartość domyślna -> <?php echo get_option('trade_fair_date_eng')?> "</p>
 			</div>
         <?php
 	}
@@ -1109,6 +1109,9 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	/*dzien branzowy*/
 	function show_trade_fair_branzowy(){
 		$result = get_option('trade_fair_branzowy');
+		if (empty($result)) {
+			return get_option('trade_fair_date');
+		}
 		return $result;
 	}
 	add_shortcode( 'trade_fair_branzowy', 'show_trade_fair_branzowy' );
@@ -1116,6 +1119,9 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 	/*dzien branzowy ENG*/
 	function show_trade_fair_branzowy_eng(){
 		$result = get_option('trade_fair_branzowy_eng');
+		if (empty($result)) {
+			$result = get_option('trade_fair_date_eng');
+		}
 		return $result;
 	}
 	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
