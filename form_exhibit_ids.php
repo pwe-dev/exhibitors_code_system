@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.9
+Version: 4.5.10
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -331,6 +331,9 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 
         add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_branzowy_eng");
+
+		add_settings_field("trade_fair_badge", "Początek nazwy badge -> ..._gosc_a6 <br>[trade_fair_badge]</p>", "display_trade_fair_badge", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_badge");
 
 		add_settings_field("trade_fair_opisbranzy", "Krótki opis branży <br>[trade_fair_opisbranzy]</p>", "display_trade_fair_opisbranzy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_opisbranzy");
@@ -791,6 +794,16 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 
+	function display_trade_fair_badge()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_badge" id="trade_fair_badge" value="<?php echo get_option('trade_fair_badge'); ?>" />
+				<p>"Początek nazwy badge -> ..._gosc_a6 "</p>
+			</div>
+        <?php
+	}
+
 	function display_trade_fair_opisbranzy()
     {
         ?>
@@ -1125,6 +1138,13 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
+
+	/*początek badge*/
+	function show_trade_fair_badge(){
+		$result = get_option('trade_fair_badge');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_badge', 'show_trade_fair_badge' );
 
 	/*opis branzowy*/
 	function show_trade_fair_opisbranzy(){
