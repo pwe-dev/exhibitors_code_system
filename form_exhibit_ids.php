@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.10
+Version: 4.5.12
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -283,6 +283,11 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		
 		add_settings_field("trade_fair_name_eng", "Nazwa Targów<hr><p>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_eng");
+		
+		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_catalog", "Numer aktualnych targów do katalogu wystawców<hr><p>Wpisz numer targów expo-planu <br>[trade_fair_catalog]</p>", "display_trade_fair_catalog", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_catalog");
+		/*END */
 
 		add_settings_field("trade_fair_name_ru", "Nazwa Targów<hr><p>Wpisz nazwę targów RU<br>[trade_fair_name_ru]</p>", "display_trade_fair_name_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_ru");
@@ -300,7 +305,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		register_setting("code_checker", "trade_fair_datetotimer");
 		
 		/*Dodane przez Marka*/
-        add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_enddata");
 		/*END */
 
@@ -317,7 +322,7 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stbuildday");
 
-        add_settings_field("trade_fair_2ndbuildday", "Data drugiego dnia zabudowy<hr><p>Wpisz date drugiego dnia zabudowy<br>[trade_fair_2ndbuildday]</p>", "display_trade_fair_2ndbuildday", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_2ndbuildday", "Data drugiego dnia zabudowy<hr><p>Wpisz date drugiego dnia zabudowy<br>[trade_fair_2ndbuildday]</p>", "display_trade_fair_2ndbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_2ndbuildday");
 
 		add_settings_field("trade_fair_1stdismantlday", "Data pierwszego dnia rozbiórki<hr><p>Wpisz date pierwszego dnia rozbiórki zabudowy<br>[trade_fair_1stdismantlday]</p>", "display_trade_fair_1stdismantlday", "code-checker", "code_checker");      
@@ -714,14 +719,25 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
         <?php
 	}
 	/*Dodane przez Marka*/
-    function display_trade_fair_enddata()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_enddata" id="trade_fair_enddata" value="<?php echo get_option('trade_fair_enddata'); ?>" />
-				<p>"2020/10/14 16:30 (Y:M:D H:M)"</p>
-			</div>
-        <?php
+
+	function display_trade_fair_enddata()
+	{
+			?>
+		<div class="form-field">
+			<input type="text" name="trade_fair_enddata" id="trade_fair_enddata" value="<?php echo get_option('trade_fair_enddata'); ?>" />
+			<p>"2020/10/14 16:30 (Y:M:D H:M)"</p>
+		</div>
+			<?php
+	}
+
+	function display_trade_fair_catalog()
+	{
+			?>
+		<div class="form-field">
+			<input type="text" name="trade_fair_catalog" id="trade_fair_catalog" value="<?php echo get_option('trade_fair_catalog'); ?>" />
+			<p>"999"</p>
+		</div>
+			<?php
 	}
 
 	function display_trade_fair_1stbuildday()
@@ -1055,6 +1071,13 @@ add_action('admin_menu', 'my_cool_plugin_create_menu');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_enddata', 'show_trade_fair_enddata' );
+
+	// Catalog ID
+	function show_trade_fair_catalog(){
+		$result = get_option('trade_fair_catalog');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_catalog', 'show_trade_fair_catalog' );
 
 	// 1stbuildday
 	function show_trade_fair_1stbuildday(){

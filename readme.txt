@@ -54,8 +54,9 @@ Answer to foo bar dilemma.
 2. This is the second screen shot
 
 == Changelog ==
-= 4.5.6=
-
+= 4.5.12=
+* Added:
+    trade_fair_catalog
 = 4.5.5 =
 * Added:
     trade_fair_opisbranzowy
