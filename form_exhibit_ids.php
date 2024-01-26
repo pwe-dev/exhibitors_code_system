@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 4.5.12
+Version: 5.0
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -175,10 +175,6 @@ class PageTemplater {
 
 }
 add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
-
-// create custom plugin settings menu
-add_action('admin_menu', 'my_cool_plugin_create_menu');
-
 
     function add_new_menu_items()
     {
