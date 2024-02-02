@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.0
+Version: 5.1
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -245,7 +245,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 						</div>
 					</div>
 				</div>
-				<div id="col-right" class="postbox-container">
+				<div id="col-right" class="postbox-container exhibitors-code-system">
 					<div class="col-wrap">
 						<div class="form-wrap">
 							<form method="POST" action="options.php" enctype="multipart/form-data">
@@ -274,112 +274,115 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
     {
 		add_settings_section("code_checker", "Code System Checker", "display_header_options_content", "code-checker");
 		
-		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p>Wpisz nazwę targów PL<br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p class='half-tab-code-system'>Wpisz nazwę targów PL<br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name");
 		
-		add_settings_field("trade_fair_name_eng", "Nazwa Targów<hr><p>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name_eng", "Nazwa Targów<hr><p class='half-tab-code-system'>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_eng");
 		
 		/*Dodane przez Marka*/
-		add_settings_field("trade_fair_catalog", "Numer aktualnych targów do katalogu wystawców<hr><p>Wpisz numer targów expo-planu <br>[trade_fair_catalog]</p>", "display_trade_fair_catalog", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_catalog", "Numer aktualnych targów do katalogu wystawców<hr><p class='half-tab-code-system' >Wpisz numer targów expo-planu <br>[trade_fair_catalog]</p>", "display_trade_fair_catalog", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_catalog");
+
+        add_settings_field("trade_fair_catalog_year", "Data do aktualnego katalogu wystawców<hr><p class='half-tab-code-system' >Wpisz rok który będzie się wyświetlał w nagłówkach <br>[trade_fair_catalog_year]</p>", "display_trade_fair_catalog_year", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_catalog_year");
 		/*END */
 
-		add_settings_field("trade_fair_name_ru", "Nazwa Targów<hr><p>Wpisz nazwę targów RU<br>[trade_fair_name_ru]</p>", "display_trade_fair_name_ru", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name_ru", "Nazwa Targów<hr><p class='dont-show-code-system'>Wpisz nazwę targów RU<br>[trade_fair_name_ru]</p>", "display_trade_fair_name_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_ru");
 
-		add_settings_field("trade_fair_desc", "Opis targów<hr><p>Wpisz opis targów PL<br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc", "Opis targów<hr><p class='full-tab-code-system'>Wpisz opis targów PL<br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc");
 
-		add_settings_field("trade_fair_desc_eng", "Opis targów<hr><p>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc_eng", "Opis targów<hr><p class='full-tab-code-system'>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc_eng");
 
-		add_settings_field("trade_fair_desc_ru", "Opis targów<hr><p>Wpisz opis targów RU<br>[trade_fair_desc_ru]</p>", "display_trade_fair_desc_ru", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc_ru", "Opis targów<hr><p class='dont-show-code-system'>Wpisz opis targów RU<br>[trade_fair_desc_ru]</p>", "display_trade_fair_desc_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc_ru");
 
-		add_settings_field("trade_fair_datetotimer", "Data targów do licznika<hr><p>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_datetotimer", "Data targów do licznika<hr><p class='half-tab-code-system'>Wpisz date targow do licznika<br>[trade_fair_datetotimer]</p>", "display_trade_fair_datetotimer", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_datetotimer");
 		
 		/*Dodane przez Marka*/
-		add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p class='half-tab-code-system'>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_enddata");
 		/*END */
 
-		add_settings_field("trade_fair_date", "Data Targów<hr><p>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_date", "Data Targów<hr><p class='half-tab-code-system'>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date");
 
-		add_settings_field("trade_fair_date_eng", "Data Targów (ENG)<hr><p>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_date_eng", "Data Targów (ENG)<hr><p class='half-tab-code-system'>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_eng");
 
-		add_settings_field("trade_fair_date_ru", "Data Targów (RU)<hr><p>Wpisz datę targów (RU)<br>[trade_fair_date_ru]</p>", "display_trade_fair_date_ru", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_date_ru", "Data Targów (RU)<hr><p class='dont-show-code-system'>Wpisz datę targów (RU)<br>[trade_fair_date_ru]</p>", "display_trade_fair_date_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_ru");
 
 		/*Dodane przez Marka*/
-		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p class='half-tab-code-system'>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stbuildday");
 
-		add_settings_field("trade_fair_2ndbuildday", "Data drugiego dnia zabudowy<hr><p>Wpisz date drugiego dnia zabudowy<br>[trade_fair_2ndbuildday]</p>", "display_trade_fair_2ndbuildday", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_2ndbuildday", "Data drugiego dnia zabudowy<hr><p class='half-tab-code-system'>Wpisz date drugiego dnia zabudowy<br>[trade_fair_2ndbuildday]</p>", "display_trade_fair_2ndbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_2ndbuildday");
 
-		add_settings_field("trade_fair_1stdismantlday", "Data pierwszego dnia rozbiórki<hr><p>Wpisz date pierwszego dnia rozbiórki zabudowy<br>[trade_fair_1stdismantlday]</p>", "display_trade_fair_1stdismantlday", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_1stdismantlday", "Data pierwszego dnia rozbiórki<hr><p class='half-tab-code-system'>Wpisz date pierwszego dnia rozbiórki zabudowy<br>[trade_fair_1stdismantlday]</p>", "display_trade_fair_1stdismantlday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stdismantlday");
 
-        add_settings_field("trade_fair_2nddismantlday", "Data drugiego dnia rozbiórki<hr><p>Wpisz date drugiego dnia rozbiórki zabudowy<br>[trade_fair_2nddismantlday]</p>", "display_trade_fair_2nddismantlday", "code-checker", "code_checker");      
+        add_settings_field("trade_fair_2nddismantlday", "Data drugiego dnia rozbiórki<hr><p class='half-tab-code-system'>Wpisz date drugiego dnia rozbiórki zabudowy<br>[trade_fair_2nddismantlday]</p>", "display_trade_fair_2nddismantlday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_2nddismantlday");
 
-		add_settings_field("trade_fair_branzowy", "Data dni branżowych targów<hr><p>Wpisz date dni branżowych<br>[trade_fair_branzowy]</p>", "display_trade_fair_branzowy", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_branzowy", "Data dni branżowych targów<hr><p class='half-tab-code-system'>Wpisz date dni branżowych<br>[trade_fair_branzowy]</p>", "display_trade_fair_branzowy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_branzowy");
 
-        add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
+        add_settings_field("trade_fair_branzowy_eng", "Data dni branżowych targów (ENG)<hr><p class='half-tab-code-system'>Wpisz date dni branżowych (ENG)<br>[trade_fair_branzowy_eng]</p>", "display_trade_fair_branzowy_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_branzowy_eng");
 
-		add_settings_field("trade_fair_badge", "Początek nazwy badge -> ..._gosc_a6 <br>[trade_fair_badge]</p>", "display_trade_fair_badge", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_badge", "Początek nazwy badge -> ..._gosc_a6 <hr><p class='half-tab-code-system'>[trade_fair_badge]</p>", "display_trade_fair_badge", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_badge");
 
-		add_settings_field("trade_fair_opisbranzy", "Krótki opis branży <br>[trade_fair_opisbranzy]</p>", "display_trade_fair_opisbranzy", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_opisbranzy", "Krótki opis branży <hr><p class='full-tab-code-system'>[trade_fair_opisbranzy]</p>", "display_trade_fair_opisbranzy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_opisbranzy");
 
-		add_settings_field("trade_fair_opisbranzy_eng", "Krótki opis branży ENG <br>[trade_fair_opisbranzy_eng]</p>", "display_trade_fair_opisbranzy_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_opisbranzy_eng", "Krótki opis branży ENG <hr><p class='full-tab-code-system'>[trade_fair_opisbranzy_eng]</p>", "display_trade_fair_opisbranzy_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_opisbranzy_eng");
 
-		add_settings_field("trade_fair_facebook", "Adres wydarzenia na facebook <br>[trade_fair_facebook]</p>", "display_trade_fair_facebook", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_facebook", "Adres wydarzenia na facebook <hr><p class='half-tab-code-system'>[trade_fair_facebook]</p>", "display_trade_fair_facebook", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_facebook");
 
-		add_settings_field("trade_fair_instagram", "Adres wydarzenia na instagram <br>[trade_fair_instagram]</p>", "display_trade_fair_instagram", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_instagram", "Adres wydarzenia na instagram <hr><p class='half-tab-code-system'>[trade_fair_instagram]</p>", "display_trade_fair_instagram", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_instagram");
 		/*END */
 
-		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<br>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
+		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<hr><p class='half-tab-code-system'>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
 		register_setting("code_checker", "first_day");
 
-		add_settings_field("second_day", "Drugi dzień targów<hr><p>Wpisz drugi dzień targów<br>[second_day]</p>", "display_second_day", "code-checker", "code_checker");      
+		add_settings_field("second_day", "Drugi dzień targów<hr><p>Wpisz drugi dzień targów<hr><p class='half-tab-code-system'>[second_day]</p>", "display_second_day", "code-checker", "code_checker");      
 		register_setting("code_checker", "second_day");
 
-		add_settings_field("third_day", "Trzeci dzień targów<hr><p>Wpisz trzeci dzień targów<br>[third_day]</p>", "display_third_day", "code-checker", "code_checker");      
+		add_settings_field("third_day", "Trzeci dzień targów<hr><p>Wpisz trzeci dzień targów<hr><p class='half-tab-code-system'>[third_day]</p>", "display_third_day", "code-checker", "code_checker");      
 		register_setting("code_checker", "third_day");
 
-		add_settings_field("first_day_eng", "Pierwszy dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<br>[first_day_eng]</p>", "display_first_day_eng", "code-checker", "code_checker");      
+		add_settings_field("first_day_eng", "Pierwszy dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<hr><p class='half-tab-code-system'>[first_day_eng]</p>", "display_first_day_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "first_day_eng");
 
-		add_settings_field("second_day_eng", "Drugi dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<br>[second_day_eng]</p>", "display_second_day_eng", "code-checker", "code_checker");      
+		add_settings_field("second_day_eng", "Drugi dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<hr><p class='half-tab-code-system'>[second_day_eng]</p>", "display_second_day_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "second_day_eng");
 
-		add_settings_field("third_day_eng", "Trzeci dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<br>[third_day_eng]</p>", "display_third_day_eng", "code-checker", "code_checker");      
+		add_settings_field("third_day_eng", "Trzeci dzień targów (ENG)<hr><p>Wpisz pierwszy dzień targów<hr><p class='half-tab-code-system'>[third_day_eng]</p>", "display_third_day_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "third_day_eng");
 		
-		add_settings_field("first_day_ru", "Pierwszy dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<br>[first_day_ru]</p>", "display_first_day_ru", "code-checker", "code_checker");      
+		add_settings_field("first_day_ru", "Pierwszy dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<hr><p class='dont-show-code-system'>[first_day_ru]</p>", "display_first_day_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "first_day_ru");
 
-		add_settings_field("second_day_ru", "Drugi dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<br>[second_day_ru]</p>", "display_second_day_ru", "code-checker", "code_checker");      
+		add_settings_field("second_day_ru", "Drugi dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<hr><p class='dont-show-code-system'>[second_day_ru]</p>", "display_second_day_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "second_day_ru");
 
-		add_settings_field("third_day_ru", "Trzeci dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<br>[third_day_ru]</p>", "display_third_day_ru", "code-checker", "code_checker");      
+		add_settings_field("third_day_ru", "Trzeci dzień targów (RU)<hr><p>Wpisz pierwszy dzień targów<hr><p class='dont-show-code-system'>[third_day_ru]</p>", "display_third_day_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "third_day_ru");
 
-		add_settings_field("super_shortcode_1", "Shortcode dodatkowy 1<hr><p>Dodatkowy shortcode na cokolwiek 1<br>[super_shortcode_1]</p>", "display_super_shortcode_1", "code-checker", "code_checker");      
+		add_settings_field("super_shortcode_1", "Shortcode dodatkowy 1<hr><p class='full-tab-code-system'>Dodatkowy shortcode na cokolwiek 1<br>[super_shortcode_1]</p>", "display_super_shortcode_1", "code-checker", "code_checker");      
 		register_setting("code_checker", "super_shortcode_1");
 
-		add_settings_field("super_shortcode_2", "Shortcode dodatkowy 2<hr><p>Dodatkowy shortcode na cokolwiek 2<br>[super_shortcode_2]</p>", "display_super_shortcode_2", "code-checker", "code_checker");      
+		add_settings_field("super_shortcode_2", "Shortcode dodatkowy 2<hr><p class='full-tab-code-system'>Dodatkowy shortcode na cokolwiek 2<br>[super_shortcode_2]</p>", "display_super_shortcode_2", "code-checker", "code_checker");      
 		register_setting("code_checker", "super_shortcode_2");
 
 		add_settings_field("code_prefix", "Code Prefix", "display_code_prefix", "code-checker", "code_checker");
@@ -636,7 +639,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 	function display_trade_fair_name()
     {
         ?>
-			<div class="form-field">
+			<div class="form-field half-tab-code-system">
 				<input type="text" name="trade_fair_name" id="trade_fair_name" value="<?php echo get_option('trade_fair_name'); ?>" />
 				<p>"np. Warsaw Fleet Expo"</p>
 			</div>
@@ -646,7 +649,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 	function display_trade_fair_name_eng()
     {
         ?>
-			<div class="form-field">
+			<div class="form-field half-tab-code-system">
 				<input type="text" name="trade_fair_name_eng" id="trade_fair_name_eng" value="<?php echo get_option('trade_fair_name_eng'); ?>" />
 				<p>"np. Warsaw Fleet Expo"</p>
 			</div>
@@ -732,6 +735,16 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 		<div class="form-field">
 			<input type="text" name="trade_fair_catalog" id="trade_fair_catalog" value="<?php echo get_option('trade_fair_catalog'); ?>" />
 			<p>"999"</p>
+		</div>
+			<?php
+	}
+
+    function display_trade_fair_catalog_year()
+	{
+			?>
+		<div class="form-field">
+			<input type="text" name="trade_fair_catalog_year" id="trade_fair_catalog_year" value="<?php echo get_option('trade_fair_catalog_year'); ?>" />
+			<p>"2024"</p>
 		</div>
 			<?php
 	}
@@ -1075,6 +1088,12 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 	}
 	add_shortcode( 'trade_fair_catalog', 'show_trade_fair_catalog' );
 
+    function show_trade_fair_catalog_year(){
+		$result = get_option('trade_fair_catalog_year');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_catalog_year', 'show_trade_fair_catalog_year' );
+
 	// 1stbuildday
 	function show_trade_fair_1stbuildday(){
 		$result = get_option('trade_fair_1stbuildday');
@@ -1316,3 +1335,35 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 			return $_GET[$data];
 		}
 	}
+
+	?>
+	<style>
+		@media screen and (min-width: 1200px) {
+            .exhibitors-code-system .form-table tbody{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.dont-show-code-system){
+                display:none;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system){
+                flex-basis: 50%;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) th{
+                min-width:40%;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) td{
+                width:60%;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system){
+                flex-basis: 100%;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) th{
+                min-width: 20%;
+            }
+            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) td{
+                width: 80%;
+            }
+		}
+	</style>
