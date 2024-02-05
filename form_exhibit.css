@@ -1,0 +1,35 @@
+@media screen and (min-width: 1200px) {
+  .exhibitors-code-system .form-table tbody {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.dont-show-code-system) {
+    display: none;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) {
+    flex-basis: 50%;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) th {
+    min-width: 40%;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) td {
+    width: 60%;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) {
+    flex-basis: 100%;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) th {
+    min-width: 20%;
+  }
+
+  .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) td {
+    width: 80%;
+  }
+}

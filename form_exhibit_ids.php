@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.1
+Version: 5.3
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -274,10 +274,10 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
     {
 		add_settings_section("code_checker", "Code System Checker", "display_header_options_content", "code-checker");
 		
-		add_settings_field("trade_fair_name", "Nazwa Targów<hr><p class='half-tab-code-system'>Wpisz nazwę targów PL<br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name", "Nazwa Targów PL<hr><p class='half-tab-code-system'>Wpisz nazwę targów PL<br>[trade_fair_name]</p>", "display_trade_fair_name", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name");
 		
-		add_settings_field("trade_fair_name_eng", "Nazwa Targów<hr><p class='half-tab-code-system'>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_name_eng", "Nazwa Targów EN<hr><p class='half-tab-code-system'>Wpisz nazwę targów EN<br>[trade_fair_name_eng]</p>", "display_trade_fair_name_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_eng");
 		
 		/*Dodane przez Marka*/
@@ -291,10 +291,10 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 		add_settings_field("trade_fair_name_ru", "Nazwa Targów<hr><p class='dont-show-code-system'>Wpisz nazwę targów RU<br>[trade_fair_name_ru]</p>", "display_trade_fair_name_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_name_ru");
 
-		add_settings_field("trade_fair_desc", "Opis targów<hr><p class='full-tab-code-system'>Wpisz opis targów PL<br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc", "Opis targów PL<hr><p class='full-tab-code-system'>Wpisz opis targów PL<br>[trade_fair_desc]</p>", "display_trade_fair_desc", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc");
 
-		add_settings_field("trade_fair_desc_eng", "Opis targów<hr><p class='full-tab-code-system'>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_desc_eng", "Opis targów EN<hr><p class='full-tab-code-system'>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc_eng");
 
 		add_settings_field("trade_fair_desc_ru", "Opis targów<hr><p class='dont-show-code-system'>Wpisz opis targów RU<br>[trade_fair_desc_ru]</p>", "display_trade_fair_desc_ru", "code-checker", "code_checker");      
@@ -308,10 +308,10 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 		register_setting("code_checker", "trade_fair_enddata");
 		/*END */
 
-		add_settings_field("trade_fair_date", "Data Targów<hr><p class='half-tab-code-system'>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_date", "Data Targów PL<hr><p class='half-tab-code-system'>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date");
 
-		add_settings_field("trade_fair_date_eng", "Data Targów (ENG)<hr><p class='half-tab-code-system'>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_date_eng", "Data Targów EN<hr><p class='half-tab-code-system'>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_eng");
 
 		add_settings_field("trade_fair_date_ru", "Data Targów (RU)<hr><p class='dont-show-code-system'>Wpisz datę targów (RU)<br>[trade_fair_date_ru]</p>", "display_trade_fair_date_ru", "code-checker", "code_checker");      
@@ -1336,34 +1336,10 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 		}
 	}
 
+	function enqueue_form_exhibit() {
+    $css_file = plugins_url('form_exhibit.css', __FILE__);
+    $css_version = filemtime(plugin_dir_url( __FILE__ ) . 'form_exhibit.css');
+    wp_enqueue_style('form_exhibit', $css_file, array(), $css_version);
+	}
+	add_action( 'admin_enqueue_scripts', 'enqueue_form_exhibit' );
 	?>
-	<style>
-		@media screen and (min-width: 1200px) {
-            .exhibitors-code-system .form-table tbody{
-                display: flex;
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.dont-show-code-system){
-                display:none;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system){
-                flex-basis: 50%;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) th{
-                min-width:40%;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.half-tab-code-system) td{
-                width:60%;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system){
-                flex-basis: 100%;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) th{
-                min-width: 20%;
-            }
-            .exhibitors-code-system .form-table tr:has(th):has(p):has(.full-tab-code-system) td{
-                width: 80%;
-            }
-		}
-	</style>
