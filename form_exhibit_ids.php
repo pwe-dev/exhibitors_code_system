@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.3
+Version: 5.4
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -442,6 +442,9 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
 		add_settings_field("trade_fair_actualyear", "Aktualny rok<hr><p>Nie zminiać<br>[trade_fair_actualyear]</p>", "display_trade_fair_actualyear", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_actualyear");
+
+		add_settings_field("trade_fair_rejestracja", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_rejestracja]</p>", "display_trade_fair_rejestracja", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_rejestracja");
 		/*END */
     }
 
@@ -878,6 +881,16 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 			</div>
         <?php
 	}
+
+	function display_trade_fair_rejestracja()
+    {
+        ?>
+			<div class="form-field full-tab-code-system">
+				<input type="text" name="trade_fair_rejestracja" id="trade_fair_rejestracja" value="<?php echo get_option('trade_fair_rejestracja'); ?>"/>
+				<p>"wartość domyślna -> rejestracja@<?php echo $_SERVER['HTTP_HOST']; ?>"</p>
+			</div>
+        <?php
+	}
 	/*END*/
 
 
@@ -1311,6 +1324,15 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 		return $result;
 	}
 	add_shortcode( 'trade_fair_actualyear', 'show_trade_fair_actualyear' );
+
+	// Email Rejestracji dodane przez Marka
+	function show_trade_fair_rejestracja(){
+		if (empty($result)) {
+			return 'rejestracja@' . $_SERVER['HTTP_HOST'];
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_rejestracja', 'show_trade_fair_rejestracja' );
 
 	//* Shortcode to display form success on another page 
 	add_shortcode('form_data', 'form_data_function'); 
