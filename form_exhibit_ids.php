@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.5
+Version: 5.6
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -351,7 +351,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
 		/*Dodane przez Marka*/
 		add_settings_field("trade_fair_conferance", "Główna nazwa konferencji <hr><p class='full-tab-code-system'>Wpisz główną nazwę konferencji<br>[trade_fair_conferance]</p>", "display_trade_fair_conferance", "code-checker", "code_checker");      
-		register_setting("code_checker", "trade_fair_1stbuildday");
+		register_setting("code_checker", "trade_fair_conferance");
 
 		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p class='half-tab-code-system'>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stbuildday");
@@ -792,7 +792,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_conferance" id="trade_fair_conferance" value="<?php echo get_option('trade_fair_conferance'); ?>" />
-				<p>"Przykład -> <?php echo get_option('trade_fair_name') ?> Innowations "</p>
+				<p>"Przykład -> <?php echo get_option('trade_fair_name') ?> Innowations"</p>
 			</div>
         <?php
 	}
