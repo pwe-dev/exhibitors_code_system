@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.5
+Version: 5.7
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -176,37 +176,59 @@ class PageTemplater {
 }
 add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
-	function connectToDatabase($fair_name) {
-		$database_host = 'localhost';
-		$database_name = 'warsawexpo_dodatkowa';
-		$database_user = 'warsawexpo_admin-dodatkowy';
-		$database_password = 'N4c-TsI+I4-C56@q';
+function connectToDatabase($fair_name) {
+    $databases = [
+        [
+            'host' => 'localhost',
+            'name' => 'warsawexpo_dodatkowa',
+            'user' => 'warsawexpo_admin-dodatkowy',
+            'password' => 'N4c-TsI+I4-C56@q'
+        ],
+        [
+            'host' => 'localhost',
+            'name' => 'automechanicawar_dodatkowa',
+            'user' => 'automechanicawar_admin-dodatkowa',
+            'password' => '9tL-2-88UAnO_x2e'
+        ]
+    ];
+    if ($_SERVER['SERVER_ADDR'] != '94.152.207.180') {
+        $custom_db = new wpdb($databases[0]['user'], $databases[0]['password'], $databases[0]['name'], $databases[0]['host']);
+        
+        if (empty($custom_db->error)) {
+            $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
+            $results = $custom_db->get_results($prepared_query);
+            
+            if (!empty($results)) {
+                return $results[0]->fair_kw;
+            } else {
+                echo '<script>console.log("No results found for the given fair name.")</script>';
+                return null;
+            }
+        } else {
+            echo '<script>console.log("'.$custom_db->error.'")</script>';
+        }
+    } else {
+		$custom_db = new wpdb($databases[1]['user'], $databases[1]['password'], $databases[1]['name'], $databases[1]['host']);
+        
+        if (empty($custom_db->error)) {
+            $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
+            $results = $custom_db->get_results($prepared_query);
 
-		$custom_db = new wpdb($database_user, $database_password, $database_name, $database_host);
-		
-		// Sprawdź, czy połączenie zostało ustanowione poprawnie
-		if (!empty($custom_db->error)) {
-			$database_name = 'automechanicawar_dodatkowa';
-			$database_user = 'automechanicawar_admin-dodatkowa';
-			$database_password = '9tL-2-88UAnO_x2e';
-
-			$custom_db = new wpdb($database_user, $database_password, $database_name, $database_host);
-			
-			// Sprawdź, czy połączenie zostało ustanowione poprawnie
-			if (!empty($custom_db->error)) {
-				echo '<script>console.log("Błąd połączenia z bazą danych.")</script>';
-				$returner_data = null;
-			} else {
-				$prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = '$fair_name'");
-				$returner = $custom_db->get_results($prepared_query);
-				return $returner[0]->fair_kw;
-			}
-		} else {
-			$prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = '$fair_name'");
-			$returner = $custom_db->get_results($prepared_query);
-			return $returner[0]->fair_kw;
-		}
+            if (!empty($results)) {
+                return $results[0]->fair_kw;
+            } else {
+                echo '<script>console.log("No results found for the given fair name.")</script>';
+                return null;
+            }
+        } else {
+            echo '<script>console.log("'.$custom_db->error.'")</script>';
+        }
 	}
+    
+    echo '<script>console.log("Failed to connect to all databases.")</script>';
+    return null;
+}
+
 
     function add_new_menu_items()
     {
@@ -351,7 +373,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
 		/*Dodane przez Marka*/
 		add_settings_field("trade_fair_conferance", "Główna nazwa konferencji <hr><p class='full-tab-code-system'>Wpisz główną nazwę konferencji<br>[trade_fair_conferance]</p>", "display_trade_fair_conferance", "code-checker", "code_checker");      
-		register_setting("code_checker", "trade_fair_1stbuildday");
+		register_setting("code_checker", "trade_fair_conferance");
 
 		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p class='half-tab-code-system'>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stbuildday");
@@ -792,7 +814,7 @@ add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_conferance" id="trade_fair_conferance" value="<?php echo get_option('trade_fair_conferance'); ?>" />
-				<p>"Przykład -> <?php echo get_option('trade_fair_name') ?> Innowations "</p>
+				<p>"Przykład -> <?php echo get_option('trade_fair_name') ?> Innowations"</p>
 			</div>
         <?php
 	}
