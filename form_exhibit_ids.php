@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.7
+Version: 5.8
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -360,13 +360,21 @@ function connectToDatabase($fair_name) {
 		/*Dodane przez Marka*/
 		add_settings_field("trade_fair_enddata", "Data zakończenia targów do licznika<hr><p class='half-tab-code-system'>Wpisz date zakończenia targow do licznika<br>[trade_fair_enddata]</p>", "display_trade_fair_enddata", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_enddata");
-		/*END */
+		/*END*/
 
 		add_settings_field("trade_fair_date", "Data Targów PL<hr><p class='half-tab-code-system'>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date");
 
 		add_settings_field("trade_fair_date_eng", "Data Targów EN<hr><p class='half-tab-code-system'>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_eng");
+
+		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_accent", "Kolor akcentu strony<hr><p class='half-tab-code-system'>Wpisz color akcentu -> (#hex) <br>[trade_fair_accent]</p>", "display_trade_fair_accent", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_accent");
+
+		add_settings_field("trade_fair_main2", "Kolor Main2 <hr><p class='half-tab-code-system'>Wpisz color main2 -> (#hex) <br>[trade_fair_main2]</p>", "display_trade_fair_main2", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_main2");
+		/*END*/
 
 		add_settings_field("trade_fair_date_ru", "Data Targów (RU)<hr><p class='dont-show-code-system'>Wpisz datę targów (RU)<br>[trade_fair_date_ru]</p>", "display_trade_fair_date_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_ru");
@@ -889,6 +897,26 @@ function connectToDatabase($fair_name) {
         <?php
 	}
 
+	function display_trade_fair_accent()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_accent" id="trade_fair_accent" value="<?php echo get_option('trade_fair_accent'); ?>" />
+				<p>"np -> #84gj64"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_main2()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_main2" id="trade_fair_main2" value="<?php echo get_option('trade_fair_main2'); ?>" />
+				<p>"np -> #84gj64"</p>
+			</div>
+        <?php
+	}
+
 	function display_trade_fair_badge()
     {
         ?>
@@ -1247,6 +1275,26 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_date_ru', 'show_trade_fair_date_ru' );
 	
 	/*Dodane przez Marka*/ 
+	/*color accent*/
+	function show_trade_fair_accent(){
+		$result = get_option('trade_fair_accent');
+		// if (empty($result)) {
+		// 	return get_option('trade_fair_accent');
+		// }
+		return $result;
+	}
+	add_shortcode( 'trade_fair_accent', 'show_trade_fair_accent' );
+
+	/*color main2*/
+	function show_trade_fair_main2(){
+		$result = get_option('trade_fair_main2');
+		// if (empty($result)) {
+		// 	return get_option('trade_fair_main2');
+		// }
+		return $result;
+	}
+	add_shortcode( 'trade_fair_main2', 'show_trade_fair_main2' );
+
 	/*dzien branzowy*/
 	function show_trade_fair_branzowy(){
 		$result = get_option('trade_fair_branzowy');
