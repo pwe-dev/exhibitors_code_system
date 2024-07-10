@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 5.8
+Version: 6.2
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -177,55 +177,57 @@ class PageTemplater {
 add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
 function connectToDatabase($fair_name) {
-    $databases = [
-        [
-            'host' => 'localhost',
-            'name' => 'warsawexpo_dodatkowa',
-            'user' => 'warsawexpo_admin-dodatkowy',
-            'password' => 'N4c-TsI+I4-C56@q'
-        ],
-        [
-            'host' => 'localhost',
-            'name' => 'automechanicawar_dodatkowa',
-            'user' => 'automechanicawar_admin-dodatkowa',
-            'password' => '9tL-2-88UAnO_x2e'
-        ]
-    ];
-    if ($_SERVER['SERVER_ADDR'] != '94.152.207.180') {
-        $custom_db = new wpdb($databases[0]['user'], $databases[0]['password'], $databases[0]['name'], $databases[0]['host']);
+    // $databases = [
+    //     [
+    //         'host' => 'localhost',
+    //         'name' => 'warsawexpo_dodatkowa',
+    //         'user' => 'warsawexpo_admin-dodatkowy',
+    //         'password' => 'N4c-TsI+I4-C56@q'
+    //     ],
+    //     [
+    //         'host' => 'localhost',
+    //         'name' => 'automechanicawar_dodatkowa',
+    //         'user' => 'automechanicawar_admin-dodatkowa',
+    //         'password' => '9tL-2-88UAnO_x2e'
+    //     ]
+    // ];
+    // if ($_SERVER['SERVER_ADDR'] != '94.152.207.180') {
+    //     $custom_db = new wpdb($databases[0]['user'], $databases[0]['password'], $databases[0]['name'], $databases[0]['host']);
         
-        if (empty($custom_db->error)) {
-            $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
-            $results = $custom_db->get_results($prepared_query);
+    //     if (empty($custom_db->error)) {
+    //         $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
+    //         $results = $custom_db->get_results($prepared_query);
             
-            if (!empty($results)) {
-                return $results[0]->fair_kw;
-            } else {
-                echo '<script>console.log("No results found for the given fair name.")</script>';
-                return null;
-            }
-        } else {
-            echo '<script>console.log("'.$custom_db->error.'")</script>';
-        }
-    } else {
-		$custom_db = new wpdb($databases[1]['user'], $databases[1]['password'], $databases[1]['name'], $databases[1]['host']);
-        
-        if (empty($custom_db->error)) {
-            $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
-            $results = $custom_db->get_results($prepared_query);
+    //         if (!empty($results)) {
+    //             return $results[0]->fair_kw;
+    //         } else {
+    //             echo '<script>console.log("No results found for the given fair name.")</script>';
+    //             return null;
+    //         }
+    //     } else {
+    //         echo '<script>console.log("'.$custom_db->error.'")</script>';
+    //     }
+    // } else {
+	// 	$custom_db = new wpdb($databases[1]['user'], $databases[1]['password'], $databases[1]['name'], $databases[1]['host']);
+	// 	// echo '<pre style="width:500px;">';
+    //     // var_dump($custom_db);
+	// 	// echo '<pre>';
+    //     if (empty($custom_db->error)) {
+    //         $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
+    //         $results = $custom_db->get_results($prepared_query);
 
-            if (!empty($results)) {
-                return $results[0]->fair_kw;
-            } else {
-                echo '<script>console.log("No results found for the given fair name.")</script>';
-                return null;
-            }
-        } else {
-            echo '<script>console.log("'.$custom_db->error.'")</script>';
-        }
-	}
+    //         if (!empty($results)) {
+    //             return $results[0]->fair_kw;
+    //         } else {
+    //             echo '<script>console.log("No results found for the given fair name.")</script>';
+    //             return null;
+    //         }
+    //     } else {
+    //         //var_dump($custom_db->error);
+    //     }
+	// }
     
-    echo '<script>console.log("Failed to connect to all databases.")</script>';
+    // echo '<script>console.log("Failed to connect to all databases.")</script>';
     return null;
 }
 
@@ -369,6 +371,9 @@ function connectToDatabase($fair_name) {
 		register_setting("code_checker", "trade_fair_date_eng");
 
 		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_edition", "Data zakończenia targów do licznika<hr><p class='full-tab-code-system'>Wpisz date zakończenia targow do licznika<br>[trade_fair_edition]</p>", "display_trade_fair_edition", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_edition");
+
 		add_settings_field("trade_fair_accent", "Kolor akcentu strony<hr><p class='half-tab-code-system'>Wpisz color akcentu -> (#hex) <br>[trade_fair_accent]</p>", "display_trade_fair_accent", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_accent");
 
@@ -382,6 +387,9 @@ function connectToDatabase($fair_name) {
 		/*Dodane przez Marka*/
 		add_settings_field("trade_fair_conferance", "Główna nazwa konferencji <hr><p class='full-tab-code-system'>Wpisz główną nazwę konferencji<br>[trade_fair_conferance]</p>", "display_trade_fair_conferance", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_conferance");
+
+		add_settings_field("trade_fair_conferance_eng", "Główna nazwa konferencji (ENG) <hr><p class='full-tab-code-system'>Wpisz główną nazwę konferencji<br>[trade_fair_conferance_eng]</p>", "display_trade_fair_conferance_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_conferance_eng");
 
 		add_settings_field("trade_fair_1stbuildday", "Data pierwszego dnia zabudowy<hr><p class='half-tab-code-system'>Wpisz date pierwszego dnia zabudowy<br>[trade_fair_1stbuildday]</p>", "display_trade_fair_1stbuildday", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_1stbuildday");
@@ -827,6 +835,16 @@ function connectToDatabase($fair_name) {
         <?php
 	}
 
+	function display_trade_fair_conferance_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_conferance_eng" id="trade_fair_conferance_eng" value="<?php echo get_option('trade_fair_conferance_eng'); ?>" />
+				<p>"Przykład -> <?php echo get_option('trade_fair_name') ?> Innowations"</p>
+			</div>
+        <?php
+	}
+
 	function display_trade_fair_1stbuildday()
     {
         ?>
@@ -893,6 +911,16 @@ function connectToDatabase($fair_name) {
 			<div class="form-field">
 				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
 				<p>"wartość domyślna -> <?php echo get_option('trade_fair_date_eng')?> "</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_edition()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_edition" id="trade_fair_edition" value="<?php echo get_option('trade_fair_edition'); ?>" />
+				<p>"np -> 2"</p>
 			</div>
         <?php
 	}
@@ -1212,6 +1240,13 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_conferance', 'show_trade_fair_conferance' );
 
+	// conferance eng
+	function show_trade_fair_conferance_eng(){
+		$result = get_option('trade_fair_conferance_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_conferance_eng', 'show_trade_fair_conferance_eng' );
+
 	// 1stbuildday
 	function show_trade_fair_1stbuildday(){
 		$result = get_option('trade_fair_1stbuildday');
@@ -1275,6 +1310,13 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_date_ru', 'show_trade_fair_date_ru' );
 	
 	/*Dodane przez Marka*/ 
+	/*nr edycji*/
+	function show_trade_fair_edition(){
+		$result = get_option('trade_fair_edition');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_edition', 'show_trade_fair_edition' );
+
 	/*color accent*/
 	function show_trade_fair_accent(){
 		$result = get_option('trade_fair_accent');
@@ -1488,5 +1530,50 @@ function connectToDatabase($fair_name) {
     $css_version = filemtime(plugin_dir_url( __FILE__ ) . 'form_exhibit.css');
     wp_enqueue_style('form_exhibit', $css_file, array(), $css_version);
 	}
+
+	add_filter('gform_replace_merge_tags', 'GF_shortcodes', 10, 7 );
+
+	function GF_shortcodes($text, $form, $entry, $url_encode, $esc_html, $nl2br, $format) {
+		// Define the merge tags and their replacements
+		$merge_tags = array(
+			'{trade_fair_name}' => show_trade_fair_name(),
+			'{trade_fair_name_eng}' => show_trade_fair_name_eng(),
+			'{trade_fair_desc}' => show_trade_fair_desc(),
+			'{trade_fair_desc_eng}' => show_trade_fair_desc_eng(),
+			'{trade_fair_datetotimer}' => show_trade_fair_datetotimer(),
+			'{trade_fair_enddata}' => show_trade_fair_enddata(),
+			//'{trade_fair_catalog}' => show_trade_fair_catalog(),
+			'{trade_fair_catalog_year}' => show_trade_fair_catalog_year(),
+			'{trade_fair_conferance}' => show_trade_fair_conferance(),
+			'{trade_fair_conferance_eng}' => show_trade_fair_conferance_eng(),
+			'{trade_fair_1stbuildday}' => show_trade_fair_1stbuildday(),
+			'{trade_fair_2ndbuildday}' => show_trade_fair_2ndbuildday(),
+			'{trade_fair_1stdismantlday}' => show_trade_fair_1stdismantlday(),
+			'{trade_fair_2nddismantlday}' => show_trade_fair_2nddismantlday(),
+			'{trade_fair_date}' => show_trade_fair_date(),
+			'{trade_fair_date_eng}' => show_trade_fair_date_eng(),
+			'{trade_fair_accent}' => show_trade_fair_accent(),
+			'{trade_fair_edition}' => show_trade_fair_edition(),
+			'{trade_fair_main2}' => show_trade_fair_main2(),
+			'{trade_fair_branzowy}' => show_trade_fair_branzowy(),
+			'{trade_fair_branzowy_eng}' => show_trade_fair_branzowy_eng(),
+			'{trade_fair_badge}' => show_trade_fair_badge(),
+			'{trade_fair_opisbranzy}' => show_trade_fair_opisbranzy(),
+			'{trade_fair_opisbranzy_eng}' => show_trade_fair_opisbranzy_eng(),
+			'{trade_fair_facebook}' => show_trade_fair_facebook(),
+			'{trade_fair_instagram}' => show_trade_fair_instagram(),
+			'{trade_fair_domainadress}' => show_trade_fair_domainadress(),
+			'{trade_fair_actualyear}' => show_trade_fair_actualyear(),
+			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
+		);
+		// Loop through each merge tag and replace it in the text
+		foreach ($merge_tags as $tag => $replacement) {
+			if ( strpos($text, $tag) !== false ) {
+				$text = str_replace($tag, $replacement, $text);
+			}
+		}
+		return $text;
+	}
+
 	add_action( 'admin_enqueue_scripts', 'enqueue_form_exhibit' );
 	?>
