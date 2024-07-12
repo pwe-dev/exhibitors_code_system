@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.2
+Version: 6.3
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -371,7 +371,7 @@ function connectToDatabase($fair_name) {
 		register_setting("code_checker", "trade_fair_date_eng");
 
 		/*Dodane przez Marka*/
-		add_settings_field("trade_fair_edition", "Data zakończenia targów do licznika<hr><p class='full-tab-code-system'>Wpisz date zakończenia targow do licznika<br>[trade_fair_edition]</p>", "display_trade_fair_edition", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_edition", "Numer Edycji targów<hr><p class='full-tab-code-system'>Wpisz aktualny numer edycji<br>[trade_fair_edition]</p>", "display_trade_fair_edition", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_edition");
 
 		add_settings_field("trade_fair_accent", "Kolor akcentu strony<hr><p class='half-tab-code-system'>Wpisz color akcentu -> (#hex) <br>[trade_fair_accent]</p>", "display_trade_fair_accent", "code-checker", "code_checker");      
