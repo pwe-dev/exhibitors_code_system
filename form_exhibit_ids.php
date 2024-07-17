@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.3
+Version: 6.4
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -352,6 +352,14 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_desc_eng", "Opis targów EN<hr><p class='full-tab-code-system'>Wpisz opis targów EN<br>[trade_fair_desc_eng]</p>", "display_trade_fair_desc_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc_eng");
+
+		/*Dodane przez Marka*/
+		add_settings_field("trade_fair_desc_short", "Skrócony Opis targów PL<hr><p class='half-tab-code-system'>Wpisz skrócony opis targów PL<br>[trade_fair_desc_short]</p>", "display_trade_fair_desc_short", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_desc_short");
+
+		add_settings_field("trade_fair_desc_short_eng", "Skrócony Opis targów EN<hr><p class='half-tab-code-system'>Wpisz skrócony opis targów EN<br>[trade_fair_desc_short_eng]</p>", "display_trade_fair_desc_short_eng", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_desc_short_eng");
+		/*END*/
 
 		add_settings_field("trade_fair_desc_ru", "Opis targów<hr><p class='dont-show-code-system'>Wpisz opis targów RU<br>[trade_fair_desc_ru]</p>", "display_trade_fair_desc_ru", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_desc_ru");
@@ -758,6 +766,26 @@ function connectToDatabase($fair_name) {
         ?>
 			<div class="form-field">
 				<input type="text" name="trade_fair_desc_eng" id="trade_fair_desc_eng" value="<?php echo get_option('trade_fair_desc_eng'); ?>" />
+				<p>"np. Międzynarodowe targi bla bla bla"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_desc_short()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_desc_short" id="trade_fair_desc_short" value="<?php echo get_option('trade_fair_desc_short'); ?>" />
+				<p>"np. Międzynarodowe targi bla bla bla"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_desc_short_eng()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_desc_short_eng" id="trade_fair_desc_short_eng" value="<?php echo get_option('trade_fair_desc_short_eng'); ?>" />
 				<p>"np. Międzynarodowe targi bla bla bla"</p>
 			</div>
         <?php
@@ -1196,6 +1224,18 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_desc_eng', 'show_trade_fair_desc_eng' );
 
+	function show_trade_fair_desc_short(){
+		$result = get_option('trade_fair_desc_short');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_desc_short', 'show_trade_fair_desc_short' );
+
+	function show_trade_fair_desc_short_eng(){
+		$result = get_option('trade_fair_desc_short_eng');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_desc_short_eng', 'show_trade_fair_desc_short_eng' );
+
 	function show_trade_fair_desc_ru(){
 		$result = get_option('trade_fair_desc_ru');
 		return $result;
@@ -1540,6 +1580,8 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_name_eng}' => show_trade_fair_name_eng(),
 			'{trade_fair_desc}' => show_trade_fair_desc(),
 			'{trade_fair_desc_eng}' => show_trade_fair_desc_eng(),
+			'{trade_fair_desc_short}' => show_trade_fair_desc_short(),
+			'{trade_fair_desc_short_eng}' => show_trade_fair_desc_short_eng(),
 			'{trade_fair_datetotimer}' => show_trade_fair_datetotimer(),
 			'{trade_fair_enddata}' => show_trade_fair_enddata(),
 			//'{trade_fair_catalog}' => show_trade_fair_catalog(),
