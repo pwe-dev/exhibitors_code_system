@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.4
+Version: 6.5
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1225,12 +1225,18 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_desc_eng', 'show_trade_fair_desc_eng' );
 
 	function show_trade_fair_desc_short(){
+		if (empty($result)) {
+			return  get_option('trade_fair_desc');
+		}
 		$result = get_option('trade_fair_desc_short');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_desc_short', 'show_trade_fair_desc_short' );
 
 	function show_trade_fair_desc_short_eng(){
+		if (empty($result)) {
+			return  get_option('trade_fair_desc_eng');
+		}
 		$result = get_option('trade_fair_desc_short_eng');
 		return $result;
 	}
@@ -1275,6 +1281,9 @@ function connectToDatabase($fair_name) {
 
 	// conferance
 	function show_trade_fair_conferance(){
+		if (empty($result)) {
+			return  get_option('trade_fair_desc');
+		}
 		$result = get_option('trade_fair_conferance');
 		return $result;
 	}
@@ -1282,6 +1291,9 @@ function connectToDatabase($fair_name) {
 
 	// conferance eng
 	function show_trade_fair_conferance_eng(){
+		if (empty($result)) {
+			return  get_option('trade_fair_desc_eng');
+		}
 		$result = get_option('trade_fair_conferance_eng');
 		return $result;
 	}
