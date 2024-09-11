@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.6
+Version: 6.7
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -526,6 +526,8 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_rejestracja", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_rejestracja]</p>", "display_trade_fair_rejestracja", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_rejestracja");
+
+		register_setting("code_checker", "trade_fair_gf_coder");
 		/*END */
     }
 
@@ -1364,6 +1366,13 @@ function connectToDatabase($fair_name) {
 	/*Dodane przez Marka*/ 
 	/*nr edycji*/
 	function show_trade_fair_edition(){
+		if(get_option('trade_fair_edition') == '1'){
+			if(get_locale() == "pl_PL"){
+				return 'Premierowa';
+			} else {
+				return 'Premier';
+			}
+		}
 		$result = get_option('trade_fair_edition');
 		return $result;
 	}
@@ -1553,6 +1562,12 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_rejestracja', 'show_trade_fair_rejestracja' );
 
+	//Zakodowanie danych uzytkownika tylko dla GF
+	function show_trade_fair_gf_coder($form, $entry){
+		return rtrim(base64_encode($form . ',' . $entry), '=');
+	}
+	add_shortcode( 'trade_fair_gf_coder', 'show_trade_fair_gf_coder' );
+
 	//* Shortcode to display form success on another page 
 	add_shortcode('form_data', 'form_data_function'); 
 	function form_data_function( $atts ) { 
@@ -1579,7 +1594,7 @@ function connectToDatabase($fair_name) {
 
 	function enqueue_form_exhibit() {
     $css_file = plugins_url('form_exhibit.css', __FILE__);
-    $css_version = filemtime(plugin_dir_url( __FILE__ ) . 'form_exhibit.css');
+    $css_version = filemtime(plugin_dir_path( __FILE__ ) . 'form_exhibit.css');
     wp_enqueue_style('form_exhibit', $css_file, array(), $css_version);
 	}
 
@@ -1619,6 +1634,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_domainadress}' => show_trade_fair_domainadress(),
 			'{trade_fair_actualyear}' => show_trade_fair_actualyear(),
 			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
+			'{trade_fair_gf_coder}' => (isset($form['id']) && isset($entry['id'])) ? show_trade_fair_gf_coder($form['id'], $entry['id']) : '',
 		);
 		// Loop through each merge tag and replace it in the text
 		foreach ($merge_tags as $tag => $replacement) {
