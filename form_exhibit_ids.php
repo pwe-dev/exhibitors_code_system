@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.7
+Version: 6.9.1
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1009,7 +1009,7 @@ function connectToDatabase($fair_name) {
     {
         ?>
 			<div class="form-field">
-				<input type="text" name="trade_fair_domainadress" id="trade_fair_domainadress" value="<?php echo $_SERVER['HTTP_HOST']; ?>" disabled/>
+				<input type="text" name="trade_fair_domainadress" id="trade_fair_domainadress" value="<?php echo str_replace('https://', '', home_url()); ?>" disabled/>
 				<p>"Automatycznie pobierany adres strony"</p>
 			</div>
         <?php
@@ -1365,15 +1365,31 @@ function connectToDatabase($fair_name) {
 	
 	/*Dodane przez Marka*/ 
 	/*nr edycji*/
-	function show_trade_fair_edition(){
-		if(get_option('trade_fair_edition') == '1'){
-			if(get_locale() == "pl_PL"){
-				return 'Premierowa';
+	function show_trade_fair_edition($entry = '', $fields = ''){
+		$result = '';
+		$lang = '';
+		if($entry != '' && $fields != ''){
+			if (strpos(strtolower($fields[4]['label']), 'wysy') !== false){
+				$lang = (strpos(strtolower($entry[$fields[4]['id']]), 'eng')) ? 'en' : 'pl';
 			} else {
-				return 'Premier';
+				foreach($fields as $id => $key){
+					if (strpos(strtolower($key['label']), 'wysy') !== false){
+						$lang = (strpos(strtolower($entry[$key['id']]), 'eng')) ? 'en' : 'pl';
+						break;
+					}
+				}
 			}
 		}
-		$result = get_option('trade_fair_edition');
+
+		if(get_option('trade_fair_edition') == '1'){
+			if(get_locale() == "pl_PL" && $lang != 'en'){
+				$result .= 'Premierowa';
+			} else {
+				$result .= 'Premier';
+			}
+		} else {
+			$result = get_option('trade_fair_edition') . '.';
+		}
 		return $result;
 	}
 	add_shortcode( 'trade_fair_edition', 'show_trade_fair_edition' );
@@ -1541,7 +1557,10 @@ function connectToDatabase($fair_name) {
 
 	// Adres strony dodane przez Marka
 	function show_trade_fair_domainadress(){
-		$result = $_SERVER['HTTP_HOST'];
+		$result = str_replace('https://', '', home_url());
+		if(empty($result)){
+			return $_SERVER['HTTP_HOST'];
+		}
 		return $result;
 	}
 	add_shortcode( 'trade_fair_domainadress', 'show_trade_fair_domainadress' );
@@ -1622,7 +1641,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_date}' => show_trade_fair_date(),
 			'{trade_fair_date_eng}' => show_trade_fair_date_eng(),
 			'{trade_fair_accent}' => show_trade_fair_accent(),
-			'{trade_fair_edition}' => show_trade_fair_edition(),
+			'{trade_fair_edition}' => (isset($form['field']) && isset($entry)) ? show_trade_fair_edition($entry, $form['fields']) : show_trade_fair_edition(),
 			'{trade_fair_main2}' => show_trade_fair_main2(),
 			'{trade_fair_branzowy}' => show_trade_fair_branzowy(),
 			'{trade_fair_branzowy_eng}' => show_trade_fair_branzowy_eng(),
@@ -1636,6 +1655,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
 			'{trade_fair_gf_coder}' => (isset($form['id']) && isset($entry['id'])) ? show_trade_fair_gf_coder($form['id'], $entry['id']) : '',
 		);
+
 		// Loop through each merge tag and replace it in the text
 		foreach ($merge_tags as $tag => $replacement) {
 			if ( strpos($text, $tag) !== false ) {
