@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.1
+Version: 6.9.2
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1557,9 +1557,9 @@ function connectToDatabase($fair_name) {
 
 	// Adres strony dodane przez Marka
 	function show_trade_fair_domainadress(){
-		$result = str_replace('https://', '', home_url());
+		$result = $_SERVER['HTTP_HOST'];
 		if(empty($result)){
-			return $_SERVER['HTTP_HOST'];
+			return str_replace('https://', '', home_url());
 		}
 		return $result;
 	}
