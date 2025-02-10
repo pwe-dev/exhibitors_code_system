@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.2
+Version: 6.9.3
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -431,6 +431,13 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_instagram", "Adres wydarzenia na instagram <hr><p class='half-tab-code-system'>[trade_fair_instagram]</p>", "display_trade_fair_instagram", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_instagram");
+
+		/*Dodane przez Piotrek*/
+		add_settings_field("trade_fair_linkedin", "Adres wydarzenia na linkedin <hr><p class='half-tab-code-system'>[trade_fair_linkedin]</p>", "display_trade_fair_linkedin", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_linkedin");
+
+		add_settings_field("trade_fair_youtube", "Adres wydarzenia na youtube <hr><p class='half-tab-code-system'>[trade_fair_youtube]</p>", "display_trade_fair_youtube", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_youtube");
 		/*END */
 
 		add_settings_field("first_day", "Pierwszy dzień targów<hr><p>Wpisz pierwszy dzień targów<hr><p class='half-tab-code-system'>[first_day]</p>", "display_first_day", "code-checker", "code_checker");      
@@ -1035,6 +1042,28 @@ function connectToDatabase($fair_name) {
         <?php
 	}
 
+	/*Dodane przez Piotrka*/
+	function display_trade_fair_linkedin()
+    {
+        ?>
+			<div class="form-field">
+				<input type="text" name="trade_fair_linkedin" id="trade_fair_linkedin" value="<?php echo get_option('trade_fair_linkedin'); ?>"/>
+				<p>"https://linkedin/..."</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_youtube()
+	{
+			?>
+		<div class="form-field">
+			<input type="text" name="trade_fair_youtube" id="trade_fair_youtube" value="<?php echo get_option('trade_fair_youtube'); ?>"/>
+			<p>"https://youtube/..."</p>
+		</div>
+			<?php
+}
+	/*END*/
+
 	function display_trade_fair_rejestracja()
     {
         ?>
@@ -1476,7 +1505,28 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_instagram', 'show_trade_fair_instagram' );
 	/*END*/
 	/*END*/
-	
+
+	/*Dodane przez Piotrka*/ 
+	/*adres linkedin*/
+		function show_trade_fair_linkedin(){
+			$result = get_option('trade_fair_linkedin');
+			if (empty($result)) {
+				return "https://warsawexpo.eu";
+			}
+			return $result;
+		}
+		add_shortcode( 'trade_fair_linkedin', 'show_trade_fair_linkedin' );
+
+		function show_trade_fair_youtube(){
+			$result = get_option('trade_fair_youtube');
+			if (empty($result)) {
+				return "https://warsawexpo.eu";
+			}
+			return $result;
+		}
+		add_shortcode( 'trade_fair_youtube', 'show_trade_fair_youtube' );
+	/*END*/
+
 	// First day 
 	function show_first_day(){
 		$result = get_option('first_day');
@@ -1650,6 +1700,8 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_opisbranzy_eng}' => show_trade_fair_opisbranzy_eng(),
 			'{trade_fair_facebook}' => show_trade_fair_facebook(),
 			'{trade_fair_instagram}' => show_trade_fair_instagram(),
+			'{trade_fair_linkedin}' => show_trade_fair_linkedin(),
+			'{trade_fair_youtube}' => show_trade_fair_youtube(),
 			'{trade_fair_domainadress}' => show_trade_fair_domainadress(),
 			'{trade_fair_actualyear}' => show_trade_fair_actualyear(),
 			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
