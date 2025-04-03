@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.4
+Version: 6.9.5
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1028,12 +1028,21 @@ function connectToDatabase($fair_name) {
 
     function display_trade_fair_catalog_year()
 	{
-			?>
-		<div class="form-field">
-			<input type="text" name="trade_fair_catalog_year" id="trade_fair_catalog_year" value="<?php echo get_option('trade_fair_catalog_year'); ?>" />
-			<p>"2024"</p>
-		</div>
-			<?php
+		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
+		?>
+			<div class="form-field">
+				<input 
+					<?php echo $pwe_date_start_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text" 
+					name="trade_fair_catalog_year" 
+					id="trade_fair_catalog_year" 
+					value="<?php echo $result ?>" 
+				/>
+				<p><?php echo $pwe_date_start_available ? "Dane pobrane z CAP DB" : "2026"; ?></p>
+			</div>
+		<?php
 	}
 
 	function display_trade_fair_conferance()
@@ -1595,7 +1604,9 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_catalog', 'show_trade_fair_catalog' );
 
     function show_trade_fair_catalog_year(){
-		$result = get_option('trade_fair_catalog_year');
+		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_catalog_year', 'show_trade_fair_catalog_year' );
