@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.5
+Version: 6.9.6
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -732,7 +732,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_name()
     {
 		$pwe_name_pl = shortcode_exists("pwe_name_pl") ? do_shortcode('[pwe_name_pl]') : "";
-		$pwe_name_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_pl) && $pwe_name_pl !== "Brak danych");
+		$pwe_name_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_pl) && $pwe_name_pl !== "");
         ?>
 			<div class="form-field half-tab-code-system">
 				<input 
@@ -753,7 +753,7 @@ function connectToDatabase($fair_name) {
 		$pwe_name_pl = shortcode_exists("pwe_name_pl") ? do_shortcode('[pwe_name_pl]') : "";
         $pwe_name_en = shortcode_exists("pwe_name_en") ? do_shortcode('[pwe_name_en]') : "";
         $pwe_name_en = !empty($pwe_name_en) ? $pwe_name_en : $pwe_name_pl; 
-		$pwe_name_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_en) && $pwe_name_en !== "Brak danych");
+		$pwe_name_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_en) && $pwe_name_en !== "");
         ?>
 			<div class="form-field half-tab-code-system">
 				<input 
@@ -782,7 +782,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_desc()
     {
 		$pwe_desc_pl = shortcode_exists("pwe_desc_pl") ? do_shortcode('[pwe_desc_pl]') : "";
-		$pwe_desc_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_pl) && $pwe_desc_pl !== "Brak danych");
+		$pwe_desc_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_pl) && $pwe_desc_pl !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -801,7 +801,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_desc_eng()
     {
 		$pwe_desc_en = shortcode_exists("pwe_desc_en") ? do_shortcode('[pwe_desc_en]') : "";
-		$pwe_desc_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_en) && $pwe_desc_en !== "Brak danych");
+		$pwe_desc_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_en) && $pwe_desc_en !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -848,9 +848,9 @@ function connectToDatabase($fair_name) {
 
 	function get_trade_fair_dates() {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode("[pwe_date_start]") : "";
-		$pwe_date_start_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode("[pwe_date_end]") : "";
-		$pwe_date_end_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_end) && $pwe_date_end !== "");
 	
 		// Getting dates or default values
 		$start_date = $pwe_date_start_available ? $pwe_date_start : get_option("trade_fair_datetotimer");
@@ -931,7 +931,10 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_date_field($lang = "pl") {
 		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
 	
-		$formatted_date = format_trade_fair_date($start_date, $end_date, $lang);
+		$current_time = strtotime("now");
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+		$formatted_date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? $new_date_comming_soon : format_trade_fair_date($start_date, $end_date, $lang);  
+		
 		$option_name = ($lang === "pl") ? "trade_fair_date" : "trade_fair_date_eng";
 		$placeholder = ($lang === "pl") ? "np. 15-16 grudnia 2020" : "e.g. December 15-16, 2020";
 	
@@ -963,7 +966,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_datetotimer()
     {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
 		// Check if the result is in YYYY/MM/DD format (10 characters)
 		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
@@ -987,7 +990,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_enddata()
 	{
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
 		// Check if the result is in YYYY/MM/DD format (10 characters)
 		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
@@ -1011,7 +1014,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_catalog()
 	{
 		$pwe_catalog = shortcode_exists("pwe_catalog") ? do_shortcode('[pwe_catalog]') : "";
-		$pwe_catalog_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog) && $pwe_catalog !== "Brak danych");
+		$pwe_catalog_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog) && $pwe_catalog !== "");
 		?>
 			<div class="form-field">
 				<input 	
@@ -1029,7 +1032,7 @@ function connectToDatabase($fair_name) {
     function display_trade_fair_catalog_year()
 	{
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
 		?>
 			<div class="form-field">
@@ -1069,7 +1072,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_1stbuildday()
     {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
         ?>
 			<div class="form-field">
@@ -1089,7 +1092,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_2ndbuildday()
     {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
         ?>
 			<div class="form-field">
@@ -1109,7 +1112,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_1stdismantlday()
     {
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
         ?>
 			<div class="form-field">
@@ -1129,7 +1132,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_2nddismantlday()
     {
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
         $result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
 		?>
 			<div class="form-field">
@@ -1179,7 +1182,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_edition()
     {
 		$pwe_edition = shortcode_exists("pwe_edition") ? do_shortcode('[pwe_edition]') : "";
-		$pwe_edition_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_edition) && $pwe_edition !== "Brak danych");
+		$pwe_edition_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_edition) && $pwe_edition !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -1198,7 +1201,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_accent()
     {
 		$pwe_color_accent = shortcode_exists("pwe_color_accent") ? do_shortcode('[pwe_color_accent]') : "";
-		$pwe_color_accent_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_accent) && $pwe_color_accent !== "Brak danych");
+		$pwe_color_accent_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_accent) && $pwe_color_accent !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -1217,7 +1220,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_main2()
     {
 		$pwe_color_main2 = shortcode_exists("pwe_color_main2") ? do_shortcode('[pwe_color_main2]') : "";
-		$pwe_color_main2_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_main2) && $pwe_color_main2 !== "Brak danych");
+		$pwe_color_main2_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_main2) && $pwe_color_main2 !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -1275,7 +1278,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_facebook()
     {
 		$pwe_facebook = shortcode_exists("pwe_facebook") ? do_shortcode('[pwe_facebook]') : "";
-		$pwe_facebook_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_facebook) && $pwe_facebook !== "Brak danych");
+		$pwe_facebook_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_facebook) && $pwe_facebook !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -1294,7 +1297,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_instagram()
     {
 		$pwe_instagram = shortcode_exists("pwe_instagram") ? do_shortcode('[pwe_instagram]') : "";
-		$pwe_instagram_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_instagram) && $pwe_instagram !== "Brak danych");
+		$pwe_instagram_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_instagram) && $pwe_instagram !== "");
         ?>
 			<div class="form-field">
 				<input 
@@ -1313,7 +1316,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_linkedin()
     {
 		$pwe_linkedin = shortcode_exists("pwe_linkedin") ? do_shortcode('[pwe_linkedin]') : "";
-		$pwe_linkedin_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_linkedin) && $pwe_linkedin !== "Brak danych");
+		$pwe_linkedin_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_linkedin) && $pwe_linkedin !== "");
         ?>
 			<div class="form-field">
 				<input
@@ -1332,7 +1335,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_youtube()
 	{
 		$pwe_youtube = shortcode_exists("pwe_youtube") ? do_shortcode('[pwe_youtube]') : "";
-		$pwe_youtube_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_youtube) && $pwe_youtube !== "Brak danych");
+		$pwe_youtube_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_youtube) && $pwe_youtube !== "");
 		?>
 			<div class="form-field">
 				<input 
@@ -1498,7 +1501,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_name(){
 		$pwe_name_pl = shortcode_exists("pwe_name_pl") ? do_shortcode('[pwe_name_pl]') : "";
-		$pwe_name_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_pl) && $pwe_name_pl !== "Brak danych");
+		$pwe_name_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_pl) && $pwe_name_pl !== "");
 		$result = $pwe_name_pl_available ? $pwe_name_pl : get_option('trade_fair_name');
 		return $result;
 	}
@@ -1509,7 +1512,7 @@ function connectToDatabase($fair_name) {
 		$pwe_name_pl = shortcode_exists("pwe_name_pl") ? do_shortcode('[pwe_name_pl]') : "";
         $pwe_name_en = shortcode_exists("pwe_name_en") ? do_shortcode('[pwe_name_en]') : "";
         $pwe_name_en = !empty($pwe_name_en) ? $pwe_name_en : $pwe_name_pl; 
-		$pwe_name_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_en) && $pwe_name_en !== "Brak danych");
+		$pwe_name_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_en) && $pwe_name_en !== "");
 		$result = $pwe_name_en_available ? $pwe_name_pl : get_option('trade_fair_name_eng');
 		return $result;
 	}
@@ -1525,7 +1528,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_desc(){
 		$pwe_desc_pl = shortcode_exists("pwe_desc_pl") ? do_shortcode('[pwe_desc_pl]') : "";
-		$pwe_desc_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_pl) && $pwe_desc_pl !== "Brak danych");
+		$pwe_desc_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_pl) && $pwe_desc_pl !== "");
 		$result = $pwe_desc_pl_available ? $pwe_desc_pl : get_option('trade_fair_desc');
 		return $result;
 	}
@@ -1534,7 +1537,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_desc_eng(){
 		$pwe_desc_en = shortcode_exists("pwe_desc_en") ? do_shortcode('[pwe_desc_en]') : "";
-		$pwe_desc_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_en) && $pwe_desc_en !== "Brak danych");
+		$pwe_desc_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_desc_en) && $pwe_desc_en !== "");
 		$result = $pwe_desc_en_available ? $pwe_desc_en : get_option('trade_fair_desc_eng'); 
 		return $result;
 	}
@@ -1568,7 +1571,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_datetotimer(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
 		// Check if the result is in YYYY/MM/DD format (10 characters)
 		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
@@ -1583,7 +1586,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_enddata(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
 		// Check if the result is in YYYY/MM/DD format (10 characters)
 		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
@@ -1597,7 +1600,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_catalog(){
 		$pwe_catalog = shortcode_exists("pwe_catalog") ? do_shortcode('[pwe_catalog]') : "";
-		$pwe_catalog_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog) && $pwe_catalog !== "Brak danych");
+		$pwe_catalog_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog) && $pwe_catalog !== "");
 		$result = $pwe_catalog_available ? $pwe_catalog : get_option('trade_fair_catalog');
 		return $result;
 	}
@@ -1605,7 +1608,7 @@ function connectToDatabase($fair_name) {
 
     function show_trade_fair_catalog_year(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
 		return $result;
 	}
@@ -1635,7 +1638,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_1stbuildday(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		if (!empty(get_option('trade_fair_1stbuildday'))) {
 			$result = get_option('trade_fair_1stbuildday');
 		} else {
@@ -1649,7 +1652,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_2ndbuildday(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "Brak danych");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		if (!empty(get_option('trade_fair_2ndbuildday'))) {
 			$result = get_option('trade_fair_2ndbuildday');
 		} else {
@@ -1663,7 +1666,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_1stdismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		if (!empty(get_option('trade_fair_1nddismantlday'))) {
 			$result = get_option('trade_fair_1nddismantlday');
 		} else {
@@ -1677,7 +1680,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_2nddismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "Brak danych");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		if (!empty(get_option('trade_fair_2nddismantlday'))) {
 			$result = get_option('trade_fair_2nddismantlday');
 		} else {
@@ -1690,18 +1693,22 @@ function connectToDatabase($fair_name) {
 	
 	// Date of the fair
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
-	function show_trade_fair_date(){
+	function show_trade_fair_date() {
 		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
-		$result = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "pl") : get_option('trade_fair_date');
+		$current_time = strtotime("now");
+		$trade_fair_date = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "pl") : get_option('trade_fair_date');
+		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? "Nowa data wkrótce" : $trade_fair_date;
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date', 'show_trade_fair_date' );
 
 	// Date of the fair ENG
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
-	function show_trade_fair_date_eng(){
+	function show_trade_fair_date_eng() {
 		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
-		$result = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "en") : get_option('trade_fair_date_eng');
+		$current_time = strtotime("now");
+		$trade_fair_date_eng = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "en") : get_option('trade_fair_date_eng');
+		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? "New date comming soon" : $trade_fair_date_eng;
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date_eng', 'show_trade_fair_date_eng' );
@@ -1753,7 +1760,7 @@ function connectToDatabase($fair_name) {
 		}
 
 		$pwe_edition = shortcode_exists("pwe_edition") ? do_shortcode('[pwe_edition]') : "";
-		$pwe_edition_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_edition) && $pwe_edition !== "Brak danych");
+		$pwe_edition_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_edition) && $pwe_edition !== "");
 		
 		$trade_fair_edition = $pwe_edition_available ? $pwe_edition : get_option('trade_fair_edition');
 	
@@ -1773,7 +1780,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_accent(){
 		$pwe_color_accent = shortcode_exists("pwe_color_accent") ? do_shortcode('[pwe_color_accent]') : "";
-		$pwe_color_accent_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_accent) && $pwe_color_accent !== "Brak danych");
+		$pwe_color_accent_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_accent) && $pwe_color_accent !== "");
 		$result = $pwe_color_accent_available ? $pwe_color_accent : get_option('trade_fair_accent');
 		return $result;
 	}
@@ -1783,7 +1790,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_main2(){
 		$pwe_color_main2 = shortcode_exists("pwe_color_main2") ? do_shortcode('[pwe_color_main2]') : "";
-		$pwe_color_main2_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_main2) && $pwe_color_main2 !== "Brak danych");
+		$pwe_color_main2_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_color_main2) && $pwe_color_main2 !== "");
 		$result = $pwe_color_main2_available ? $pwe_color_main2 : get_option('trade_fair_main2');
 		return $result;
 	}
@@ -1834,7 +1841,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_facebook(){
 		$pwe_facebook = shortcode_exists("pwe_facebook") ? do_shortcode('[pwe_facebook]') : "";
-		$pwe_facebook_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_facebook) && $pwe_facebook !== "Brak danych");
+		$pwe_facebook_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_facebook) && $pwe_facebook !== "");
 		$result = $pwe_facebook_available ? $pwe_facebook : get_option('trade_fair_facebook');
 		if (empty($result)) {
 			return "https://warsawexpo.eu";
@@ -1847,7 +1854,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_instagram(){
 		$pwe_instagram = shortcode_exists("pwe_instagram") ? do_shortcode('[pwe_instagram]') : "";
-		$pwe_instagram_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_instagram) && $pwe_instagram !== "Brak danych");
+		$pwe_instagram_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_instagram) && $pwe_instagram !== "");
 		$result = $pwe_instagram_available ? $pwe_instagram : get_option('trade_fair_instagram');
 		if (empty($result)) {
 			return "https://warsawexpo.eu";
@@ -1860,7 +1867,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_linkedin(){
 		$pwe_linkedin = shortcode_exists("pwe_linkedin") ? do_shortcode('[pwe_linkedin]') : "";
-		$pwe_linkedin_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_linkedin) && $pwe_linkedin !== "Brak danych");
+		$pwe_linkedin_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_linkedin) && $pwe_linkedin !== "");
 		$result = $pwe_linkedin_available ? $pwe_linkedin : get_option('trade_fair_linkedin');
 		if (empty($result)) {
 			return "https://warsawexpo.eu";
@@ -1873,7 +1880,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_youtube(){
 		$pwe_youtube = shortcode_exists("pwe_youtube") ? do_shortcode('[pwe_youtube]') : "";
-		$pwe_youtube_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_youtube) && $pwe_youtube !== "Brak danych");
+		$pwe_youtube_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_youtube) && $pwe_youtube !== "");
 		$result = $pwe_youtube_available ? $pwe_youtube : get_option('trade_fair_youtube');
 		if (empty($result)) {
 			return "https://warsawexpo.eu";
