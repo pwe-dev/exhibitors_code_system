@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.7
+Version: 6.9.8
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1091,11 +1091,9 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function display_trade_fair_2ndbuildday()
     {
-		$pwe_edition = shortcode_exists("pwe_edition") ? do_shortcode('[pwe_edition]') : "";
-
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
 		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ($pwe_edition == "1" ? ' 8:00-20:00' : ' 8:00-18:00')) : get_option('trade_fair_2ndbuildday');
+		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ' 8:00-20:00') : get_option('trade_fair_2ndbuildday');
         ?>
 			<div class="form-field">
 				<input 
@@ -1652,11 +1650,9 @@ function connectToDatabase($fair_name) {
 	// 2ndbuildday
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_2ndbuildday(){
-		$pwe_edition = shortcode_exists("pwe_edition") ? do_shortcode('[pwe_edition]') : "";
-
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
 		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ($pwe_edition == "1" ? ' 8:00-20:00' : ' 8:00-18:00')) : get_option('trade_fair_2ndbuildday');	
+		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ' 8:00-20:00') : get_option('trade_fair_2ndbuildday');	
 		
 		return $result;
 	}
