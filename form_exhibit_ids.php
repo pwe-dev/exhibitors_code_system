@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.8
+Version: 6.9.9
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -945,7 +945,7 @@ function connectToDatabase($fair_name) {
 				type="text" 
 				name="<?php echo $option_name; ?>" 
 				id="<?php echo $option_name; ?>" 
-				value="<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? $formatted_date : get_option($option_name); ?>" 
+				value="<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? $formatted_date : get_option($option_name) ?>" 
 			/>
 			<p><?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : $placeholder; ?></p>
 		</div>
@@ -1614,7 +1614,7 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_catalog_year', 'show_trade_fair_catalog_year' );
 
-	// conferance
+	// conference
 	function show_trade_fair_conferance(){
 		$result = get_option('trade_fair_conferance');
 		if (empty($result)) {
@@ -1693,7 +1693,7 @@ function connectToDatabase($fair_name) {
 		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
 		$current_time = strtotime("now");
 		$trade_fair_date = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "pl") : get_option('trade_fair_date');
-		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? "Nowa data wkrótce" : $trade_fair_date;
+		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? (!empty(get_option('trade_fair_date')) ? get_option('trade_fair_date') : "Nowa data wkrótce") : $trade_fair_date;
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date', 'show_trade_fair_date' );
@@ -1704,7 +1704,7 @@ function connectToDatabase($fair_name) {
 		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
 		$current_time = strtotime("now");
 		$trade_fair_date_eng = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "en") : get_option('trade_fair_date_eng');
-		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? "New date comming soon" : $trade_fair_date_eng;
+		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? (!empty(get_option('trade_fair_date_eng')) ? get_option('trade_fair_date_eng') : "New date comming soon") : $trade_fair_date_eng;
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date_eng', 'show_trade_fair_date_eng' );
