@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 6.9.9
+Version: 7.0.0
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -14,6 +14,21 @@ $myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
 	'exhibitors_code_system'
 );
 $myUpdateChecker->getVcsApi()->enableReleaseAssets();
+
+$functions_file = WP_PLUGIN_DIR . '/PWElements/pwefunctions.php';
+
+if (file_exists($functions_file)) {
+    require_once $functions_file;
+} else {
+    error_log('[Exhibitors Code System] Nie znaleziono pliku PWElements/pwefunctions.php');
+
+    if (is_admin()) {
+        add_action('admin_notices', function () {
+            echo '<div class="notice notice-error"><p><strong>Exhibitors Code System:</strong> Nie znaleziono pliku <code>PWElements/pwefunctions.php</code>.</p></div>';
+        });
+    }
+    return;
+}
 
 class PageTemplater {
 
@@ -372,13 +387,16 @@ function connectToDatabase($fair_name) {
 		register_setting("code_checker", "trade_fair_enddata");
 		/*END*/
 
+		add_settings_field("trade_fair_date_custom_format", "Data targów [D-D|M|Y]<hr><p class='full-tab-code-system'>Wpisz date targow<br>[trade_fair_date_custom_format]</p>", "display_trade_fair_date_custom_format", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_date_custom_format");
+
 		add_settings_field("trade_fair_date", "Data Targów PL<hr><p class='half-tab-code-system'>Wpisz datę targów <br>[trade_fair_date]</p>", "display_trade_fair_date", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date");
 
 		add_settings_field("trade_fair_date_eng", "Data Targów EN<hr><p class='half-tab-code-system'>Wpisz datę targów (ENG)<br>[trade_fair_date_eng]</p>", "display_trade_fair_date_eng", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_date_eng");
 
-		
+
 		add_settings_field("trade_fair_edition", "Numer Edycji targów<hr><p class='full-tab-code-system'>Wpisz aktualny numer edycji<br>[trade_fair_edition]</p>", "display_trade_fair_edition", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_edition");
 
@@ -533,6 +551,9 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_rejestracja", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_rejestracja]</p>", "display_trade_fair_rejestracja", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_rejestracja");
+
+		add_settings_field("trade_fair_contact", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_contact]</p>", "display_trade_fair_contact", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_contact");
 
 		register_setting("code_checker", "trade_fair_gf_coder");
 		/*END */
@@ -963,8 +984,7 @@ function connectToDatabase($fair_name) {
 	}
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
-	function display_trade_fair_datetotimer()
-    {
+	function display_trade_fair_datetotimer() {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
 		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
@@ -987,8 +1007,7 @@ function connectToDatabase($fair_name) {
 	}
 	
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
-	function display_trade_fair_enddata()
-	{
+	function display_trade_fair_enddata() {
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
 		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
 		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
@@ -1008,6 +1027,29 @@ function connectToDatabase($fair_name) {
 				<p><?php echo $pwe_date_end_available ? "Dane pobrane z CAP DB" : "2025/10/16 10:00 (Y:M:D H:M)"; ?></p>
 			</div>
 		<?php
+	}
+
+	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
+	function display_trade_fair_date_custom_format() {
+		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+
+		$result = ($pwe_date_start_available && $pwe_date_end_available) ? PWECommonFunctions::transform_dates($pwe_date_start, $pwe_date_end, false) : get_option('trade_fair_date_custom_format');
+		
+		?>
+			<div class="form-field">
+				<input 
+					<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text" 
+					name="trade_fair_date_custom_format" 
+					id="trade_fair_date_custom_format" 
+					value="<?php echo $result ?>" 
+				/>
+				<p><?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : "14-16|10|2025 (D-D|M|Y)"; ?></p>	
+			</div>
+        <?php
 	}
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
@@ -1360,6 +1402,41 @@ function connectToDatabase($fair_name) {
 			</div>
         <?php
 	}
+	function display_trade_fair_contact() 
+    {
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "biuro-ob") {
+								$service_contact_data = json_decode($group_contact->groups_data);
+								$service_email = trim($service_contact_data->email);
+							}
+						} 
+					}
+				}
+			} 
+		}
+
+        ?>
+			<div class="form-field full-tab-code-system">
+				<input 
+					type="text" 
+					name="trade_fair_contact" 
+					id="trade_fair_contact" 
+					value="<?php echo get_option('trade_fair_contact'); ?>"
+				/>
+				<p>"wartość domyślna -> <?php echo !empty($service_email) ? $service_email : ''; ?>"</p>
+			</div>
+        <?php
+	}
 	/*END*/
 
 	function display_trade_fair_date_ru()
@@ -1595,6 +1672,18 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_enddata', 'show_trade_fair_enddata' );
+
+	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
+	function show_trade_fair_date_custom_format(){
+		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+
+		$result = ($pwe_date_start_available && $pwe_date_end_available) ? PWECommonFunctions::transform_dates($pwe_date_start, $pwe_date_end, false) : get_option('trade_fair_date_custom_format');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_date_custom_format', 'show_trade_fair_date_custom_format' );
 
 	// Catalog ID
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
@@ -1964,7 +2053,7 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'super_shortcode_2', 'show_super_shortcode_2' );
 
-	// Adres strony dodane przez Marka
+	// Adres strony 
 	function show_trade_fair_domainadress(){
 		$result = $_SERVER['HTTP_HOST'];
 		if(empty($result)){
@@ -1974,14 +2063,14 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_domainadress', 'show_trade_fair_domainadress' );
 
-	// Actual Year dodane przez Marka
+	// Actual Year 
 	function show_trade_fair_actualyear(){
 		$result = date('Y');
 		return $result;
 	}
 	add_shortcode( 'trade_fair_actualyear', 'show_trade_fair_actualyear' );
 
-	// Email Rejestracji dodane przez Marka
+	// Email Rejestracji 
 	function show_trade_fair_rejestracja(){
 		if (empty($result)) {
 			return 'rejestracja@' . $_SERVER['HTTP_HOST'];
@@ -1989,6 +2078,36 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_rejestracja', 'show_trade_fair_rejestracja' );
+
+	// Email kontaktu
+	function show_trade_fair_contact(){
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+		$result = '';
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "biuro-ob") {
+								$service_contact_data = json_decode($group_contact->groups_data);
+								$service_email = trim($service_contact_data->email);
+							}
+						} 
+					}
+				}
+			}
+		}
+
+		$result = !empty($service_email) ? $service_email : get_option('trade_fair_contact');
+
+		return $result;
+	}
+	add_shortcode( 'trade_fair_contact', 'show_trade_fair_contact' );
 
 	//Zakodowanie danych uzytkownika tylko dla GF
 	function show_trade_fair_gf_coder($form, $entry){
@@ -2019,10 +2138,206 @@ function connectToDatabase($fair_name) {
 		}
 	}
 
+
+	// FOR YOAST SEO START <----------------------------------------------------------------------<
+
+	// Rozrzeżony opis targów
+	function sc_seo_text_fair_full_desc() {
+		$domain = $_SERVER['HTTP_HOST'];
+		$shortcodes_active = empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']);
+
+        if (!function_exists('get_translated_field')) {
+            function get_translated_field($fair, $field_base_name) {
+                // Get the language in the format e.g. "de", "pl"
+
+                $lang = strtolower(ICL_LANGUAGE_CODE); // "de"
+
+                // Check if a specific translation exists (e.g. fair_name_{lang})
+                $field_with_lang = "{$field_base_name}_{$lang}";
+
+                if (!empty($fair[$field_with_lang])) {
+                    return $fair[$field_with_lang];
+                }
+
+                // Fallback to English
+                $fallback = "{$field_base_name}_en";
+                return $fair[$fallback] ?? '';
+            }
+        }
+
+        if (!function_exists('get_pwe_shortcode')) {
+            function get_pwe_shortcode($shortcode, $domain) {
+                return shortcode_exists($shortcode) ? do_shortcode('[' . $shortcode . ' domain="' . $domain . '"]') : "";
+            }
+        }
+
+        if (!function_exists('check_available_pwe_shortcode')) {
+            function check_available_pwe_shortcode($shortcodes_active, $shortcode) {
+                return $shortcodes_active && !empty($shortcode) && $shortcode !== "Brak danych";
+            }
+        }
+
+        $translates = PWECommonFunctions::get_database_translations_data($domain);
+
+        $shortcode_full_desc_pl = get_pwe_shortcode("pwe_full_desc_pl", $domain);
+        $shortcode_full_desc_pl_available = check_available_pwe_shortcode($shortcodes_active, $shortcode_full_desc_pl);
+        $fair_full_desc = $shortcode_full_desc_pl_available ? get_translated_field($translates[0], 'fair_full_desc') : '';
+
+        if (!empty($fair_full_desc)) {
+            $description = strstr($fair_full_desc, '<br>', true);
+            
+            // If strstr returned false (i.e. no <br>), we assign the entire content
+            if ($description === false) {
+                $description = $fair_full_desc;
+            }
+        }
+
+		return $description;
+
+	}
+	add_shortcode('sc_seo_text_fair_full_desc', 'sc_seo_text_fair_full_desc');
+
+	// Aktualności
+	function sc_seo_text_news() {
+		return 'Bądź na bieżąco z wydarzeniami i nowościami związanymi z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_news', 'sc_seo_text_news');
+
+	// Dla odwiedzających
+	function sc_seo_text_for_visitors() {
+		return 'Sprawdź, dlaczego warto odwiedzić '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – znajdziesz tu najnowsze trendy, innowacje i inspirujące rozwiązania.';
+	}
+	add_shortcode('sc_seo_text_for_visitors', 'sc_seo_text_for_visitors');
+
+	// Dla wystawców
+	function sc_seo_text_for_exhibitors() {
+		return 'Zdobądź nowych klientów i pokaż swoją markę na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_for_exhibitors', 'sc_seo_text_for_exhibitors');
+
+	// Dodaj do kalendarza
+	function sc_seo_text_add_calendar() {
+		return 'Nie przegap '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'! Dodaj wydarzenie do swojego kalendarza.';
+	}
+	add_shortcode('sc_seo_text_add_calendar', 'sc_seo_text_add_calendar');
+
+	// Galeria
+	function sc_seo_text_gallery() {
+		return 'Zobacz galerię '. do_shortcode('[trade_fair_name]') .' – sprawdź jak wyglądają targi z perspektywy obiektywu.';
+	}
+	add_shortcode('sc_seo_text_gallery', 'sc_seo_text_gallery');
+
+	// Informacje organizacyjne
+	function sc_seo_text_org_info() {
+		return 'Wszystkie niezbędne informacje organizacyjne dla wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_org_info', 'sc_seo_text_org_info');
+
+	// Katalog wystawców
+	function sc_seo_text_exh_catalog() {
+		return 'Poznaj firmy i marki obecne na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_exh_catalog', 'sc_seo_text_exh_catalog');
+
+	// Wydarzenia
+	function sc_seo_text_events() {
+		return 'Sprawdź wydarzenia towarzyszące '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – konferencje, prelekcje, spotkania.';
+	}
+	add_shortcode('sc_seo_text_events', 'sc_seo_text_events');
+
+	// Kontakt
+	function sc_seo_text_contact() {
+		return 'Skontaktuj się z organizatorami '. do_shortcode('[trade_fair_name]') .' i uzyskaj potrzebne informacje o wydarzeniu.';
+	}
+	add_shortcode('sc_seo_text_contact', 'sc_seo_text_contact');
+
+	// Plan targów
+	function sc_seo_text_fair_plan() {
+		return 'Zobacz plan stoisk i atrakcji '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_fair_plan', 'sc_seo_text_fair_plan');
+
+	// Rejestracja
+	function sc_seo_text_registration() {
+		return 'Zarejestruj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i odbierz swój bilet na targi.';
+	}
+	add_shortcode('sc_seo_text_registration', 'sc_seo_text_registration');
+
+	// Wypromuj się
+	function sc_seo_text_promote_yourself() {
+		return 'Zwiększ rozpoznawalność swojej marki – wypromuj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+	}
+	add_shortcode('sc_seo_text_promote_yourself', 'sc_seo_text_promote_yourself');
+
+	// Zostań wystawcą
+	function sc_seo_text_become_an_exhibitor() {
+		return 'Dołącz do grona wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i zaprezentuj swoją ofertę.';
+	}
+	add_shortcode('sc_seo_text_become_an_exhibitor', 'sc_seo_text_become_an_exhibitor');
+
+	// Sklep
+	function sc_seo_text_store() {
+		return 'Zamów bilety lub pakiety promocyjne związane z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' w naszym sklepie online.';
+	}
+	add_shortcode('sc_seo_text_store', 'sc_seo_text_store');
+
+
+	// Lista zmiennych i odpowiadających im funkcji zwracających wartość
+	function get_yoast_custom_shortcodes_map() {
+		$lang = ICL_LANGUAGE_CODE;
+		return [
+			'sc_seo_trade_fair_year'      => 'show_trade_fair_catalog_year',
+			'sc_seo_text_trade_fair_desc'      => $lang === 'pl' ? 'show_trade_fair_desc' : 'show_trade_fair_desc_eng',
+			'sc_seo_text_fair_full_desc'      => 'sc_seo_text_fair_full_desc',
+
+			// Shortcode'y SEO
+			'sc_seo_text_news'             => 'sc_seo_text_news',
+			'sc_seo_text_for_visitors'     => 'sc_seo_text_for_visitors',
+			'sc_seo_text_for_exhibitors'   => 'sc_seo_text_for_exhibitors',
+			'sc_seo_text_add_calendar'     => 'sc_seo_text_add_calendar',
+			'sc_seo_text_gallery'          => 'sc_seo_text_gallery',
+			'sc_seo_text_org_info'         => 'sc_seo_text_org_info',
+			'sc_seo_text_exh_catalog'      => 'sc_seo_text_exh_catalog',
+			'sc_seo_text_events'           => 'sc_seo_text_events',
+			'sc_seo_text_contact'          => 'sc_seo_text_contact',
+			'sc_seo_text_fair_plan'        => 'sc_seo_text_fair_plan',
+			'sc_seo_text_registration'     => 'sc_seo_text_registration',
+			'sc_seo_text_promote_yourself' => 'sc_seo_text_promote_yourself',
+			'sc_seo_text_become_an_exhibitor' => 'sc_seo_text_become_an_exhibitor',
+			'sc_seo_text_store'            => 'sc_seo_text_store',
+		];
+	}
+
+	// Rejestracja zmiennych Yoast
+	add_filter('wpseo_register_extra_replacements', function() {
+		$shortcode_map = get_yoast_custom_shortcodes_map();
+		$keys = array_map(function($key) {
+			return '%%' . $key . '%%';
+		}, array_keys($shortcode_map));
+		return $keys;
+	});
+
+	// Podstawienie wartości do zmiennych
+	add_filter('wpseo_replacements', function($replacements) {
+		$shortcode_map = get_yoast_custom_shortcodes_map();
+
+		foreach ($shortcode_map as $yoast_key => $callback) {
+			if (is_callable($callback)) {
+				$value = call_user_func($callback);
+				$replacements['%%' . $yoast_key . '%%'] = $value;
+			}
+		}
+
+		return $replacements;
+	});
+
+	// FOR YOAST SEO END <----------------------------------------------------------------------<
+
+
 	function enqueue_form_exhibit() {
-    $css_file = plugins_url('form_exhibit.css', __FILE__);
-    $css_version = filemtime(plugin_dir_path( __FILE__ ) . 'form_exhibit.css');
-    wp_enqueue_style('form_exhibit', $css_file, array(), $css_version);
+		$css_file = plugins_url('form_exhibit.css', __FILE__);
+		$css_version = filemtime(plugin_dir_path( __FILE__ ) . 'form_exhibit.css');
+		wp_enqueue_style('form_exhibit', $css_file, array(), $css_version);
 	}
 
 	add_filter('gform_replace_merge_tags', 'GF_shortcodes', 10, 7 );
@@ -2038,7 +2353,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_desc_short_eng}' => show_trade_fair_desc_short_eng(),
 			'{trade_fair_datetotimer}' => show_trade_fair_datetotimer(),
 			'{trade_fair_enddata}' => show_trade_fair_enddata(),
-			//'{trade_fair_catalog}' => show_trade_fair_catalog(),
+			'{trade_fair_catalog}' => show_trade_fair_catalog(),
 			'{trade_fair_catalog_year}' => show_trade_fair_catalog_year(),
 			'{trade_fair_conferance}' => show_trade_fair_conferance(),
 			'{trade_fair_conferance_eng}' => show_trade_fair_conferance_eng(),
@@ -2063,6 +2378,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_domainadress}' => show_trade_fair_domainadress(),
 			'{trade_fair_actualyear}' => show_trade_fair_actualyear(),
 			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
+			'{trade_fair_contact}' => show_trade_fair_contact(),
 			'{trade_fair_gf_coder}' => (isset($form['id']) && isset($entry['id'])) ? show_trade_fair_gf_coder($form['id'], $entry['id']) : '',
 		);
 
