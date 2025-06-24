@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.0
+Version: 7.0.1
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -2142,7 +2142,7 @@ function connectToDatabase($fair_name) {
 	// FOR YOAST SEO START <----------------------------------------------------------------------<
 
 	// Rozrzeżony opis targów
-	function sc_seo_text_fair_full_desc() {
+	function sc_pwe_trade_fair_full_desc() {
 		$domain = $_SERVER['HTTP_HOST'];
 		$shortcodes_active = empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']);
 
@@ -2195,116 +2195,115 @@ function connectToDatabase($fair_name) {
 		return $description;
 
 	}
-	add_shortcode('sc_seo_text_fair_full_desc', 'sc_seo_text_fair_full_desc');
+	add_shortcode('trade_fair_full_desc', 'sc_pwe_trade_fair_full_desc');
 
 	// Aktualności
-	function sc_seo_text_news() {
+	function sc_pwe_text_news() {
 		return 'Bądź na bieżąco z wydarzeniami i nowościami związanymi z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_news', 'sc_seo_text_news');
+	add_shortcode('sc_pwe_text_news', 'sc_pwe_text_news');
 
 	// Dla odwiedzających
-	function sc_seo_text_for_visitors() {
+	function sc_pwe_text_for_visitors() {
 		return 'Sprawdź, dlaczego warto odwiedzić '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – znajdziesz tu najnowsze trendy, innowacje i inspirujące rozwiązania.';
 	}
-	add_shortcode('sc_seo_text_for_visitors', 'sc_seo_text_for_visitors');
+	add_shortcode('sc_pwe_text_for_visitors', 'sc_pwe_text_for_visitors');
 
 	// Dla wystawców
-	function sc_seo_text_for_exhibitors() {
+	function sc_pwe_text_for_exhibitors() {
 		return 'Zdobądź nowych klientów i pokaż swoją markę na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_for_exhibitors', 'sc_seo_text_for_exhibitors');
+	add_shortcode('sc_pwe_text_for_exhibitors', 'sc_pwe_text_for_exhibitors');
 
 	// Dodaj do kalendarza
-	function sc_seo_text_add_calendar() {
+	function sc_pwe_text_add_calendar() {
 		return 'Nie przegap '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'! Dodaj wydarzenie do swojego kalendarza.';
 	}
-	add_shortcode('sc_seo_text_add_calendar', 'sc_seo_text_add_calendar');
+	add_shortcode('sc_pwe_text_add_calendar', 'sc_pwe_text_add_calendar');
 
 	// Galeria
-	function sc_seo_text_gallery() {
+	function sc_pwe_text_gallery() {
 		return 'Zobacz galerię '. do_shortcode('[trade_fair_name]') .' – sprawdź jak wyglądają targi z perspektywy obiektywu.';
 	}
-	add_shortcode('sc_seo_text_gallery', 'sc_seo_text_gallery');
+	add_shortcode('sc_pwe_text_gallery', 'sc_pwe_text_gallery');
 
 	// Informacje organizacyjne
-	function sc_seo_text_org_info() {
+	function sc_pwe_text_org_info() {
 		return 'Wszystkie niezbędne informacje organizacyjne dla wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_org_info', 'sc_seo_text_org_info');
+	add_shortcode('sc_pwe_text_org_info', 'sc_pwe_text_org_info');
 
 	// Katalog wystawców
-	function sc_seo_text_exh_catalog() {
+	function sc_pwe_text_exh_catalog() {
 		return 'Poznaj firmy i marki obecne na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_exh_catalog', 'sc_seo_text_exh_catalog');
+	add_shortcode('sc_pwe_text_exh_catalog', 'sc_pwe_text_exh_catalog');
 
 	// Wydarzenia
-	function sc_seo_text_events() {
+	function sc_pwe_text_events() {
 		return 'Sprawdź wydarzenia towarzyszące '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – konferencje, prelekcje, spotkania.';
 	}
-	add_shortcode('sc_seo_text_events', 'sc_seo_text_events');
+	add_shortcode('sc_pwe_text_events', 'sc_pwe_text_events');
 
 	// Kontakt
-	function sc_seo_text_contact() {
+	function sc_pwe_text_contact() {
 		return 'Skontaktuj się z organizatorami '. do_shortcode('[trade_fair_name]') .' i uzyskaj potrzebne informacje o wydarzeniu.';
 	}
-	add_shortcode('sc_seo_text_contact', 'sc_seo_text_contact');
+	add_shortcode('sc_pwe_text_contact', 'sc_pwe_text_contact');
 
 	// Plan targów
-	function sc_seo_text_fair_plan() {
+	function sc_pwe_text_fair_plan() {
 		return 'Zobacz plan stoisk i atrakcji '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_fair_plan', 'sc_seo_text_fair_plan');
+	add_shortcode('sc_pwe_text_fair_plan', 'sc_pwe_text_fair_plan');
 
 	// Rejestracja
-	function sc_seo_text_registration() {
+	function sc_pwe_text_registration() {
 		return 'Zarejestruj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i odbierz swój bilet na targi.';
 	}
-	add_shortcode('sc_seo_text_registration', 'sc_seo_text_registration');
+	add_shortcode('sc_pwe_text_registration', 'sc_pwe_text_registration');
 
 	// Wypromuj się
-	function sc_seo_text_promote_yourself() {
+	function sc_pwe_text_promote_yourself() {
 		return 'Zwiększ rozpoznawalność swojej marki – wypromuj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
 	}
-	add_shortcode('sc_seo_text_promote_yourself', 'sc_seo_text_promote_yourself');
+	add_shortcode('sc_pwe_text_promote_yourself', 'sc_pwe_text_promote_yourself');
 
 	// Zostań wystawcą
-	function sc_seo_text_become_an_exhibitor() {
+	function sc_pwe_text_become_an_exhibitor() {
 		return 'Dołącz do grona wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i zaprezentuj swoją ofertę.';
 	}
-	add_shortcode('sc_seo_text_become_an_exhibitor', 'sc_seo_text_become_an_exhibitor');
+	add_shortcode('sc_pwe_text_become_an_exhibitor', 'sc_pwe_text_become_an_exhibitor');
 
 	// Sklep
-	function sc_seo_text_store() {
+	function sc_pwe_text_store() {
 		return 'Zamów bilety lub pakiety promocyjne związane z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' w naszym sklepie online.';
 	}
-	add_shortcode('sc_seo_text_store', 'sc_seo_text_store');
-
+	add_shortcode('sc_pwe_text_store', 'sc_pwe_text_store');
 
 	// Lista zmiennych i odpowiadających im funkcji zwracających wartość
 	function get_yoast_custom_shortcodes_map() {
 		$lang = ICL_LANGUAGE_CODE;
 		return [
-			'sc_seo_trade_fair_year'      => 'show_trade_fair_catalog_year',
-			'sc_seo_text_trade_fair_desc'      => $lang === 'pl' ? 'show_trade_fair_desc' : 'show_trade_fair_desc_eng',
-			'sc_seo_text_fair_full_desc'      => 'sc_seo_text_fair_full_desc',
+			'sc_pwe_trade_fair_year'          => 'show_trade_fair_catalog_year', // %%sc_pwe_trade_fair_year%% || [trade_fair_catalog_year]
+			'sc_pwe_trade_fair_desc'          => $lang === 'pl' ? 'show_trade_fair_desc' : 'show_trade_fair_desc_eng', // %%sc_pwe_trade_fair_desc%% || [trade_fair_desc] && [trade_fair_desc_eng]
+			'sc_pwe_trade_fair_full_desc'     => 'sc_pwe_trade_fair_full_desc', // %%sc_pwe_trade_fair_full_desc%% || [trade_fair_full_desc]
 
 			// Shortcode'y SEO
-			'sc_seo_text_news'             => 'sc_seo_text_news',
-			'sc_seo_text_for_visitors'     => 'sc_seo_text_for_visitors',
-			'sc_seo_text_for_exhibitors'   => 'sc_seo_text_for_exhibitors',
-			'sc_seo_text_add_calendar'     => 'sc_seo_text_add_calendar',
-			'sc_seo_text_gallery'          => 'sc_seo_text_gallery',
-			'sc_seo_text_org_info'         => 'sc_seo_text_org_info',
-			'sc_seo_text_exh_catalog'      => 'sc_seo_text_exh_catalog',
-			'sc_seo_text_events'           => 'sc_seo_text_events',
-			'sc_seo_text_contact'          => 'sc_seo_text_contact',
-			'sc_seo_text_fair_plan'        => 'sc_seo_text_fair_plan',
-			'sc_seo_text_registration'     => 'sc_seo_text_registration',
-			'sc_seo_text_promote_yourself' => 'sc_seo_text_promote_yourself',
-			'sc_seo_text_become_an_exhibitor' => 'sc_seo_text_become_an_exhibitor',
-			'sc_seo_text_store'            => 'sc_seo_text_store',
+			'sc_pwe_text_news'                => 'sc_pwe_text_news', // %%sc_pwe_text_news%% || [sc_pwe_text_news]
+			'sc_pwe_text_for_visitors'        => 'sc_pwe_text_for_visitors', // %%sc_pwe_text_for_visitors%% || [sc_pwe_text_for_visitors]
+			'sc_pwe_text_for_exhibitors'      => 'sc_pwe_text_for_exhibitors', // %%sc_pwe_text_for_exhibitors%% || [sc_pwe_text_for_exhibitors]
+			'sc_pwe_text_add_calendar'        => 'sc_pwe_text_add_calendar', // %%sc_pwe_text_add_calendar%% || [sc_pwe_text_add_calendar]
+			'sc_pwe_text_gallery'             => 'sc_pwe_text_gallery', // %%sc_pwe_text_gallery%% || [sc_pwe_text_gallery]
+			'sc_pwe_text_org_info'            => 'sc_pwe_text_org_info', // %%sc_pwe_text_org_info%% || [sc_pwe_text_org_info]
+			'sc_pwe_text_exh_catalog'         => 'sc_pwe_text_exh_catalog', // %%sc_pwe_text_exh_catalog%% || [sc_pwe_text_exh_catalog]
+			'sc_pwe_text_events'              => 'sc_pwe_text_events', // %%sc_pwe_text_events%% || [sc_pwe_text_events]
+			'sc_pwe_text_contact'             => 'sc_pwe_text_contact', // %%sc_pwe_text_contact%% || [sc_pwe_text_contact]
+			'sc_pwe_text_fair_plan'           => 'sc_pwe_text_fair_plan', // %%sc_pwe_text_fair_plan%% || [sc_pwe_text_fair_plan]
+			'sc_pwe_text_registration'        => 'sc_pwe_text_registration', // %%sc_pwe_text_registration%% || [sc_pwe_text_registration]
+			'sc_pwe_text_promote_yourself'    => 'sc_pwe_text_promote_yourself', // %%sc_pwe_text_promote_yourself%% || [sc_pwe_text_promote_yourself]
+			'sc_pwe_text_become_an_exhibitor' => 'sc_pwe_text_become_an_exhibitor', // %%sc_pwe_text_become_an_exhibitor%% || [sc_pwe_text_become_an_exhibitor]
+			'sc_pwe_text_store'               => 'sc_pwe_text_store', // %%sc_pwe_text_store%% || [sc_pwe_text_store]
 		];
 	}
 
@@ -2325,6 +2324,8 @@ function connectToDatabase($fair_name) {
 			if (is_callable($callback)) {
 				$value = call_user_func($callback);
 				$replacements['%%' . $yoast_key . '%%'] = $value;
+			} else {
+				$replacements['%%' . $yoast_key . '%%'] = '';
 			}
 		}
 
