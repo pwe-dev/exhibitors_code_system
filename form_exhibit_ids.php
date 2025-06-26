@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.1
+Version: 7.0.2
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -552,8 +552,11 @@ function connectToDatabase($fair_name) {
 		add_settings_field("trade_fair_rejestracja", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_rejestracja]</p>", "display_trade_fair_rejestracja", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_rejestracja");
 
-		add_settings_field("trade_fair_contact", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_contact]</p>", "display_trade_fair_contact", "code-checker", "code_checker");      
+		add_settings_field("trade_fair_contact", "Adres email do formularza kontaktu<hr><p>[trade_fair_contact]</p>", "display_trade_fair_contact", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_contact");
+
+		add_settings_field("trade_fair_lidy", "Adres email do wysyłania lidów<hr><p>[trade_fair_lidy]</p>", "display_trade_fair_lidy", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_lidy");
 
 		register_setting("code_checker", "trade_fair_gf_coder");
 		/*END */
@@ -1402,6 +1405,7 @@ function connectToDatabase($fair_name) {
 			</div>
         <?php
 	}
+
 	function display_trade_fair_contact() 
     {
 		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
@@ -1434,6 +1438,42 @@ function connectToDatabase($fair_name) {
 					value="<?php echo get_option('trade_fair_contact'); ?>"
 				/>
 				<p>"wartość domyślna -> <?php echo !empty($service_email) ? $service_email : ''; ?>"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_lidy() 
+    {
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "lidy") {
+								$lidy_contact_data = json_decode($group_contact->groups_data);
+								$lidy_email = trim($lidy_contact_data->email);
+							}
+						} 
+					}
+				}
+			}
+		}
+
+        ?>
+			<div class="form-field full-tab-code-system">
+				<input 
+					type="text" 
+					name="trade_fair_lidy" 
+					id="trade_fair_lidy" 
+					value="<?php echo get_option('trade_fair_lidy'); ?>"
+				/>
+				<p>"wartość domyślna -> <?php echo !empty($lidy_email) ? $lidy_email : ''; ?>"</p>
 			</div>
         <?php
 	}
@@ -2109,6 +2149,35 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_contact', 'show_trade_fair_contact' );
 
+	function show_trade_fair_lidy(){
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+		$result = '';
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "lidy") {
+								$lidy_contact_data = json_decode($group_contact->groups_data);
+								$lidy_email = trim($lidy_contact_data->email);
+							}
+						} 
+					}
+				}
+			}
+		}
+
+		$result = !empty($lidy_email) ? $lidy_email : get_option('trade_fair_lidy');
+
+		return $result;
+	}
+	add_shortcode( 'trade_fair_lidy', 'show_trade_fair_lidy' );
+
 	//Zakodowanie danych uzytkownika tylko dla GF
 	function show_trade_fair_gf_coder($form, $entry){
 		return rtrim(base64_encode($form . ',' . $entry), '=');
@@ -2380,6 +2449,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_actualyear}' => show_trade_fair_actualyear(),
 			'{trade_fair_rejestracja}' => show_trade_fair_rejestracja(),
 			'{trade_fair_contact}' => show_trade_fair_contact(),
+			'{trade_fair_lidy}' => show_trade_fair_lidy(),
 			'{trade_fair_gf_coder}' => (isset($form['id']) && isset($entry['id'])) ? show_trade_fair_gf_coder($form['id'], $entry['id']) : '',
 		);
 
