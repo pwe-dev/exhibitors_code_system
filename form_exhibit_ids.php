@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.2
+Version: 7.0.3
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -2214,11 +2214,11 @@ function connectToDatabase($fair_name) {
 	function sc_pwe_trade_fair_full_desc() {
 		$domain = $_SERVER['HTTP_HOST'];
 		$shortcodes_active = empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']);
+		$lang = strtolower(ICL_LANGUAGE_CODE);
 
         if (!function_exists('get_translated_field')) {
             function get_translated_field($fair, $field_base_name) {
                 // Get the language in the format e.g. "de", "pl"
-
                 $lang = strtolower(ICL_LANGUAGE_CODE); // "de"
 
                 // Check if a specific translation exists (e.g. fair_name_{lang})
@@ -2248,9 +2248,9 @@ function connectToDatabase($fair_name) {
 
         $translates = PWECommonFunctions::get_database_translations_data($domain);
 
-        $shortcode_full_desc_pl = get_pwe_shortcode("pwe_full_desc_pl", $domain);
-        $shortcode_full_desc_pl_available = check_available_pwe_shortcode($shortcodes_active, $shortcode_full_desc_pl);
-        $fair_full_desc = $shortcode_full_desc_pl_available ? get_translated_field($translates[0], 'fair_full_desc') : '';
+        $shortcode_full_desc = get_pwe_shortcode("pwe_full_desc_$lang", $domain);
+        $shortcode_full_desc_available = check_available_pwe_shortcode($shortcodes_active, $shortcode_full_desc);
+        $fair_full_desc = $shortcode_full_desc_available ? get_translated_field($translates[0], 'fair_full_desc') : '';
 
         if (!empty($fair_full_desc)) {
             $description = strstr($fair_full_desc, '<br>', true);
@@ -2268,85 +2268,141 @@ function connectToDatabase($fair_name) {
 
 	// Aktualności
 	function sc_pwe_text_news() {
-		return 'Bądź na bieżąco z wydarzeniami i nowościami związanymi z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Bądź na bieżąco z wydarzeniami i nowościami związanymi z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'Stay up to date with events and news related to '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_news', 'sc_pwe_text_news');
 
 	// Dla odwiedzających
 	function sc_pwe_text_for_visitors() {
-		return 'Sprawdź, dlaczego warto odwiedzić '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – znajdziesz tu najnowsze trendy, innowacje i inspirujące rozwiązania.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Sprawdź, dlaczego warto odwiedzić '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – znajdziesz tu najnowsze trendy, innowacje i inspirujące rozwiązania.';
+		} else {
+			return 'Check out why you should visit '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – discover the latest trends, innovations, and inspiring solutions.';
+		}
 	}
 	add_shortcode('sc_pwe_text_for_visitors', 'sc_pwe_text_for_visitors');
 
 	// Dla wystawców
 	function sc_pwe_text_for_exhibitors() {
-		return 'Zdobądź nowych klientów i pokaż swoją markę na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zdobądź nowych klientów i pokaż swoją markę na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'Gain new customers and showcase your brand at '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_for_exhibitors', 'sc_pwe_text_for_exhibitors');
 
 	// Dodaj do kalendarza
 	function sc_pwe_text_add_calendar() {
-		return 'Nie przegap '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'! Dodaj wydarzenie do swojego kalendarza.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Nie przegap '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]').'! Dodaj wydarzenie do swojego kalendarza.';
+		} else {
+			return 'Don\'t miss '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]').'! Add the event to your calendar.';
+		}
 	}
 	add_shortcode('sc_pwe_text_add_calendar', 'sc_pwe_text_add_calendar');
 
 	// Galeria
 	function sc_pwe_text_gallery() {
-		return 'Zobacz galerię '. do_shortcode('[trade_fair_name]') .' – sprawdź jak wyglądają targi z perspektywy obiektywu.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zobacz galerię '. do_shortcode('[trade_fair_name]') .' – sprawdź jak wyglądają targi z perspektywy obiektywu.';
+		} else {
+			return 'See the gallery of '. do_shortcode('[trade_fair_name_eng]') .' – check out the fair through the lens of the camera.';
+		}
 	}
 	add_shortcode('sc_pwe_text_gallery', 'sc_pwe_text_gallery');
 
 	// Informacje organizacyjne
 	function sc_pwe_text_org_info() {
-		return 'Wszystkie niezbędne informacje organizacyjne dla wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Wszystkie niezbędne informacje organizacyjne dla wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'All necessary organizational information for exhibitors at '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_org_info', 'sc_pwe_text_org_info');
 
 	// Katalog wystawców
 	function sc_pwe_text_exh_catalog() {
-		return 'Poznaj firmy i marki obecne na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Poznaj firmy i marki obecne na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'Get to know the companies and brands present at '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_exh_catalog', 'sc_pwe_text_exh_catalog');
 
 	// Wydarzenia
 	function sc_pwe_text_events() {
-		return 'Sprawdź wydarzenia towarzyszące '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – konferencje, prelekcje, spotkania.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Sprawdź wydarzenia towarzyszące '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – konferencje, prelekcje, spotkania.';
+		} else {
+			return 'Check out the events accompanying '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .' – conferences, lectures, meetings.';
+		}
 	}
 	add_shortcode('sc_pwe_text_events', 'sc_pwe_text_events');
 
 	// Kontakt
 	function sc_pwe_text_contact() {
-		return 'Skontaktuj się z organizatorami '. do_shortcode('[trade_fair_name]') .' i uzyskaj potrzebne informacje o wydarzeniu.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Skontaktuj się z organizatorami '. do_shortcode('[trade_fair_name]') .' i uzyskaj potrzebne informacje o wydarzeniu.';
+		} else {
+			return 'Contact the organizers of '. do_shortcode('[trade_fair_name_eng]') .' to get the information you need about the event.';
+		}
 	}
 	add_shortcode('sc_pwe_text_contact', 'sc_pwe_text_contact');
 
 	// Plan targów
 	function sc_pwe_text_fair_plan() {
-		return 'Zobacz plan stoisk i atrakcji '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zobacz plan stoisk i atrakcji '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'See the booth and attraction plan for '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_fair_plan', 'sc_pwe_text_fair_plan');
 
 	// Rejestracja
 	function sc_pwe_text_registration() {
-		return 'Zarejestruj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i odbierz swój bilet na targi.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zarejestruj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i odbierz swój bilet na targi.';
+		} else {
+			return 'Register for '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .' and get your ticket to the fair.';
+		}
 	}
 	add_shortcode('sc_pwe_text_registration', 'sc_pwe_text_registration');
 
 	// Wypromuj się
 	function sc_pwe_text_promote_yourself() {
-		return 'Zwiększ rozpoznawalność swojej marki – wypromuj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zwiększ rozpoznawalność swojej marki – wypromuj się na '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		} else {
+			return 'Increase your brand visibility – promote yourself at '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .'.';
+		}
 	}
 	add_shortcode('sc_pwe_text_promote_yourself', 'sc_pwe_text_promote_yourself');
 
 	// Zostań wystawcą
 	function sc_pwe_text_become_an_exhibitor() {
-		return 'Dołącz do grona wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i zaprezentuj swoją ofertę.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Dołącz do grona wystawców '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' i zaprezentuj swoją ofertę.';
+		} else {
+			return 'Join the exhibitors at '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .' and present your offer.';
+		}
 	}
 	add_shortcode('sc_pwe_text_become_an_exhibitor', 'sc_pwe_text_become_an_exhibitor');
 
 	// Sklep
 	function sc_pwe_text_store() {
-		return 'Zamów bilety lub pakiety promocyjne związane z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' w naszym sklepie online.';
+		if (ICL_LANGUAGE_CODE == "pl") {
+			return 'Zamów bilety lub pakiety promocyjne związane z '. do_shortcode('[trade_fair_name]') .' '. do_shortcode('[trade_fair_catalog_year]') .' w naszym sklepie online.';
+		} else {
+			return 'Order tickets or promotional packages related to '. do_shortcode('[trade_fair_name_eng]') .' '. do_shortcode('[trade_fair_catalog_year]') .' in our online store.';
+		}
 	}
 	add_shortcode('sc_pwe_text_store', 'sc_pwe_text_store');
 
