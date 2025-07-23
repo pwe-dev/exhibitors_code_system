@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.3
+Version: 7.0.4
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -557,6 +557,20 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_lidy", "Adres email do wysyłania lidów<hr><p>[trade_fair_lidy]</p>", "display_trade_fair_lidy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_lidy");
+
+
+
+		add_settings_field("trade_fair_registration_benefits_pl", "Benefity rejestracyjne PL<hr><p>[trade_fair_registration_benefits_pl]</p>", "display_trade_fair_registration_benefits_pl", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_registration_benefits_pl");
+
+		add_settings_field("trade_fair_registration_benefits_en", "Benefity rejestracyjne EN<hr><p>[trade_fair_registration_benefits_en]</p>", "display_trade_fair_registration_benefits_en", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_registration_benefits_en");
+
+		add_settings_field("trade_fair_ticket_benefits_pl", "Benefity biletowe PL<hr><p>[trade_fair_ticket_benefits_pl]</p>", "display_trade_fair_ticket_benefits_pl", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_ticket_benefits_pl");
+
+		add_settings_field("trade_fair_ticket_benefits_en", "Benefity biletowe EN<hr><p>[trade_fair_ticket_benefits_en]</p>", "display_trade_fair_ticket_benefits_en", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_ticket_benefits_en");
 
 		register_setting("code_checker", "trade_fair_gf_coder");
 		/*END */
@@ -1600,6 +1614,111 @@ function connectToDatabase($fair_name) {
 	}
 
 
+	function days_difference() {
+		$trade_fair_date = do_shortcode('[trade_fair_date_custom_format]');
+		
+		if (preg_match('/(\d{2})-(\d{2})\|(\d{2})\|(\d{4})/', $trade_fair_date, $matches)) {
+			// $matches[1] = starting day
+			// $matches[2] = end day
+			// $matches[3] = month
+			// $matches[4] = year
+			$start_date = DateTime::createFromFormat('d-m-Y', $matches[1] . '-' . $matches[3] . '-' . $matches[4]);
+			$end_date = DateTime::createFromFormat('d-m-Y', $matches[2] . '-' . $matches[3] . '-' . $matches[4]);
+			
+			// Calculate the difference in days
+			$interval = $start_date->diff($end_date);
+			$days_difference = $interval->days + 1;
+		} else {
+			$days_difference = 3;
+		}
+
+		return $days_difference;
+	}
+
+	function display_trade_fair_registration_benefits_pl()
+    {
+		if (empty(get_option('trade_fair_registration_benefits_pl'))) {
+			$html_code = '
+			<ul>
+              <li><strong>wejścia na targi po rejestracji przez '. days_difference() .' dni</strong></li>
+              <li><strong>możliwość udziału w konferencjach</strong> lub warsztatach na zasadzie “wolnego słuchacza”</li>
+              <li>darmowy parking</li>
+            </ul>';
+		} else {
+			$html_code = get_option('trade_fair_registration_benefits_pl');
+		}
+        ?>
+			<div class="form-field">
+				<textarea id="trade_fair_registration_benefits_pl" name="trade_fair_registration_benefits_pl" rows="5" cols="100"><?php echo $html_code; ?></textarea>
+			</div>
+        <?php
+	}
+	function display_trade_fair_registration_benefits_en()
+    {
+		if (empty(get_option('trade_fair_registration_benefits_en'))) {
+			$html_code = '
+			<ul>
+              <li><strong>access to the trade fair for all '. days_difference() .' days upon registration</strong></li>
+              <li><strong>the chance to join conferences</strong> or workshops as a listener</li>
+              <li>free parking</li>
+            </ul>';
+		} else {
+			$html_code = get_option('trade_fair_registration_benefits_en');
+		}
+        ?>
+			<div class="form-field">
+				<textarea id="trade_fair_registration_benefits_en" name="trade_fair_registration_benefits_en" rows="5" cols="100"><?php echo $html_code; ?></textarea>
+			</div>
+        <?php
+	}
+	function display_trade_fair_ticket_benefits_pl()
+    {
+		if (empty(get_option('trade_fair_ticket_benefits_pl'))) {
+			$html_code = '
+			<ul>
+				<li><strong>fast track</strong> - szybkie wejście na targi dedykowaną bramką przez '. days_difference() .' dni</li>
+				<li><strong>imienny pakiet</strong> - targowy przesyłany kurierem przed wydarzeniem</li>
+				<li><strong>welcome pack</strong> - przygotowany specjalnie przez wystawców</li>
+				<li>obsługa concierge</li>
+				<li>możliwość udziału w konferencjach i&nbsp; warsztatach</li>
+				<li>darmowy parking</li>
+			</ul>';
+		} else {
+			$html_code = get_option('trade_fair_ticket_benefits_pl');
+		}
+        ?>
+			<div class="form-field">
+				<textarea id="trade_fair_ticket_benefits_pl" name="trade_fair_ticket_benefits_pl" rows="5" cols="100"><?php echo $html_code; ?></textarea>
+			</div>
+        <?php
+	}
+	function display_trade_fair_ticket_benefits_en()
+    {
+		if (empty(get_option('trade_fair_ticket_benefits_en'))) {
+			$html_code = '
+			<ul>
+				<li><strong>fast track access</strong> – skip the line and enter the trade fair through a dedicated priority gate for all '. days_difference() .' days</li>
+				<li><strong>Personalized trade fair package</strong> - delivered by courier to your address before the event</li>
+				<li><strong>welcome pack</strong> - a special set of materials and gifts prepared by exhibitors</li>
+				<li>Concierge service</li>
+				<li>Access to conferences and workshops</li>
+				<li>Free parking</li>
+			</ul>';
+		} else {
+			$html_code = get_option('trade_fair_ticket_benefits_en');
+		}
+        ?>
+			<div class="form-field">
+				<textarea id="trade_fair_ticket_benefits_en" name="trade_fair_ticket_benefits_en" rows="5" cols="100"><?php echo $html_code; ?></textarea>
+			</div>
+        <?php
+	}
+
+
+
+
+
+
 	add_action("admin_init", "display_options");
 	
 	// Visitor Counter
@@ -1766,8 +1885,6 @@ function connectToDatabase($fair_name) {
 	// 1stbuildday
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_1stbuildday(){
-		$pwe_edition = shortcode_exists("pwe_edition") ? do_shortcode('[pwe_edition]') : "";
-		
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
 		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
 		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -2 day')) . ' 8:00-18:00') : get_option('trade_fair_1stbuildday');	
@@ -1792,11 +1909,11 @@ function connectToDatabase($fair_name) {
 	function show_trade_fair_1stdismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
 		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
-		if (!empty(get_option('trade_fair_1nddismantlday'))) {
-			$result = get_option('trade_fair_1nddismantlday');
-		} else {
+		// if (!empty(get_option('trade_fair_1nddismantlday'))) {
+		// 	$result = get_option('trade_fair_1nddismantlday');
+		// } else {
 			$result = date('d.m.Y', strtotime($pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata'))) . ' 17:00-24:00';
-		}
+		// }
 		return $result;
 	}
 	add_shortcode( 'trade_fair_1stdismantlday', 'show_trade_fair_1stdismantlday' );
@@ -1806,11 +1923,11 @@ function connectToDatabase($fair_name) {
 	function show_trade_fair_2nddismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
 		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
-		if (!empty(get_option('trade_fair_2nddismantlday'))) {
-			$result = get_option('trade_fair_2nddismantlday');
-		} else {
+		// if (!empty(get_option('trade_fair_2nddismantlday'))) {
+		// 	$result = get_option('trade_fair_2nddismantlday');
+		// } else {
 			$result = date('d.m.Y', strtotime(($pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata')) . ' +1 day')) . ' 8:00-12:00';
-		}
+		// }
 		return $result;
 	}
 	add_shortcode( 'trade_fair_2nddismantlday', 'show_trade_fair_2nddismantlday' );
@@ -2178,6 +2295,81 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_lidy', 'show_trade_fair_lidy' );
 
+
+
+	// trade_fair_registration_benefits_pl
+	function show_trade_fair_registration_benefits_pl(){
+		if (empty(get_option('trade_fair_registration_benefits_pl'))) {
+			$result = '
+			<ul>
+              <li><strong>wejścia na targi po rejestracji przez '. days_difference() .' dni</strong></li>
+              <li><strong>możliwość udziału w konferencjach</strong> lub warsztatach na zasadzie “wolnego słuchacza”</li>
+              <li>darmowy parking</li>
+            </ul>';
+		} else {
+			$result = get_option('trade_fair_registration_benefits_pl');
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_registration_benefits_pl', 'show_trade_fair_registration_benefits_pl' );
+
+	// trade_fair_registration_benefits_en
+	function show_trade_fair_registration_benefits_en(){
+		if (empty(get_option('trade_fair_registration_benefits_en'))) {
+			$result = '
+			<ul>
+              <li><strong>access to the trade fair for all '. days_difference() .' days upon registration</strong></li>
+              <li><strong>the chance to join conferences</strong> or workshops as a listener</li>
+              <li>free parking</li>
+            </ul>';
+		} else {
+			$result = get_option('trade_fair_registration_benefits_en');
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_registration_benefits_en', 'show_trade_fair_registration_benefits_en' );
+
+	// trade_fair_ticket_benefits_pl
+	function show_trade_fair_ticket_benefits_pl(){
+		if (empty(get_option('trade_fair_ticket_benefits_pl'))) {
+			$result = '
+			<ul>
+				<li><strong>fast track</strong> - szybkie wejście na targi dedykowaną bramką przez '. days_difference() .' dni</li>
+				<li><strong>imienny pakiet</strong> - targowy przesyłany kurierem przed wydarzeniem</li>
+				<li><strong>welcome pack</strong> - przygotowany specjalnie przez wystawców</li>
+				<li>obsługa concierge</li>
+				<li>możliwość udziału w konferencjach i&nbsp; warsztatach</li>
+				<li>darmowy parking</li>
+			</ul>';
+		} else {
+			$result = get_option('trade_fair_ticket_benefits_pl');
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_ticket_benefits_pl', 'show_trade_fair_ticket_benefits_pl' );
+
+	// trade_fair_ticket_benefits_en
+	function show_trade_fair_ticket_benefits_en(){
+		if (empty(get_option('trade_fair_ticket_benefits_en'))) {
+			$result = '
+			<ul>
+				<li><strong>fast track access</strong> – skip the line and enter the trade fair through a dedicated priority gate for all '. days_difference() .' days</li>
+				<li><strong>Personalized trade fair package</strong> - delivered by courier to your address before the event</li>
+				<li><strong>welcome pack</strong> - a special set of materials and gifts prepared by exhibitors</li>
+				<li>Concierge service</li>
+				<li>Access to conferences and workshops</li>
+				<li>Free parking</li>
+			</ul>';
+		} else {
+			$result = get_option('trade_fair_ticket_benefits_en');
+		}
+		return $result;
+	}
+	add_shortcode( 'trade_fair_ticket_benefits_en', 'show_trade_fair_ticket_benefits_en' );
+
+
+
+
 	//Zakodowanie danych uzytkownika tylko dla GF
 	function show_trade_fair_gf_coder($form, $entry){
 		return rtrim(base64_encode($form . ',' . $entry), '=');
@@ -2507,6 +2699,10 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_contact}' => show_trade_fair_contact(),
 			'{trade_fair_lidy}' => show_trade_fair_lidy(),
 			'{trade_fair_gf_coder}' => (isset($form['id']) && isset($entry['id'])) ? show_trade_fair_gf_coder($form['id'], $entry['id']) : '',
+			'{trade_fair_registration_benefits_pl}' => show_trade_fair_registration_benefits_pl(),
+			'{trade_fair_registration_benefits_en}' => show_trade_fair_registration_benefits_en(),
+			'{trade_fair_ticket_benefits_pl}' => show_trade_fair_ticket_benefits_pl(),
+			'{trade_fair_ticket_benefits_en}' => show_trade_fair_ticket_benefits_en(),
 		);
 
 		// Loop through each merge tag and replace it in the text
