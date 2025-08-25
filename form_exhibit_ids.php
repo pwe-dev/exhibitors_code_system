@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.4
+Version: 7.0.5
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -548,6 +548,9 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_actualyear", "Aktualny rok<hr><p>Nie zminiać<br>[trade_fair_actualyear]</p>", "display_trade_fair_actualyear", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_actualyear");
+		
+		add_settings_field("trade_fair_group", "Grupa targów<hr><p>[trade_fair_group]</p>", "display_trade_fair_group", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_group");
 
 		add_settings_field("trade_fair_rejestracja", "Adres email do automatycznej odpowiedzi<hr><p>[trade_fair_rejestracja]</p>", "display_trade_fair_rejestracja", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_rejestracja");
@@ -1714,7 +1717,29 @@ function connectToDatabase($fair_name) {
         <?php
 	}
 
+	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
+	function display_trade_fair_group()
+    {
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
 
+		foreach ($pwe_groups_data as $group) {
+			if ($_SERVER['HTTP_HOST'] == $group->fair_domain) {
+				$current_group = $group->fair_group;
+			}
+		}  
+        ?>
+			<div class="form-field">
+				<input 
+					<?php echo !empty($current_group) ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?>   
+					type="text" 
+					name="trade_fair_accent" 
+					id="trade_fair_accent" 
+					value="<?php echo !empty($current_group) ? $current_group : get_option('trade_fair_group'); ?>" 
+				/>
+				<p><?php echo !empty($current_group) ? "Dane pobrane z CAP DB" : "np -> gr2"; ?></p>
+			</div>
+        <?php
+	}
 
 
 
@@ -2294,6 +2319,21 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_lidy', 'show_trade_fair_lidy' );
+
+	function show_trade_fair_group(){
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+
+		foreach ($pwe_groups_data as $group) {
+			if ($_SERVER['HTTP_HOST'] == $group->fair_domain) {
+				$current_group = $group->fair_group;
+			}
+		}  
+
+		return $current_group;
+	}
+	add_shortcode( 'trade_fair_group', 'show_trade_fair_group' );
+
+	
 
 
 
