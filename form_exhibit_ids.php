@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.5
+Version: 7.0.6
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -888,10 +888,12 @@ function connectToDatabase($fair_name) {
 	}
 
 	function get_trade_fair_dates() {
+		$pwe_shortcodes_available = empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]);
+
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode("[pwe_date_start]") : "";
-		$pwe_date_start_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_start));
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode("[pwe_date_end]") : "";
-		$pwe_date_end_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		$pwe_date_end_available = (empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]) && !empty($pwe_date_end));
 	
 		// Getting dates or default values
 		$start_date = $pwe_date_start_available ? $pwe_date_start : get_option("trade_fair_datetotimer");
@@ -901,7 +903,7 @@ function connectToDatabase($fair_name) {
 		$start_date = preg_replace("/^(\d{4}\/\d{2}\/\d{2}) \d{2}:\d{2}$/", "$1", $start_date);
 		$end_date = preg_replace("/^(\d{4}\/\d{2}\/\d{2}) \d{2}:\d{2}$/", "$1", $end_date);
 	
-		return [$start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available];
+		return [$start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available];
 	}
 	
 	function format_trade_fair_date($start_date, $end_date, $lang = "pl") {
@@ -970,25 +972,30 @@ function connectToDatabase($fair_name) {
 	}
 
 	function display_trade_fair_date_field($lang = "pl") {
-		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
-	
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
 		$current_time = strtotime("now");
 		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
-		$formatted_date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? $new_date_comming_soon : format_trade_fair_date($start_date, $end_date, $lang);  
-		
+		$formatted_date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? $new_date_comming_soon
+			: format_trade_fair_date($start_date, $end_date, $lang);
+
 		$option_name = ($lang === "pl") ? "trade_fair_date" : "trade_fair_date_eng";
-		$placeholder = ($lang === "pl") ? "np. 15-16 grudnia 2020" : "e.g. December 15-16, 2020";
-	
+		$placeholder = ($lang === "pl") ? "np. 15-16 grudnia 2026" : "e.g. December 15-16, 2026";
+
 		?>
 		<div class="form-field">
-			<input 
-				<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
-				type="text" 
-				name="<?php echo $option_name; ?>" 
-				id="<?php echo $option_name; ?>" 
-				value="<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? $formatted_date : get_option($option_name) ?>" 
+			<input
+				<?php echo $pwe_shortcodes_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+				type="text"
+				name="<?php echo $option_name; ?>"
+				id="<?php echo $option_name; ?>"
+				placeholder="<?php echo $pwe_shortcodes_available ? $formatted_date : get_option($option_name) ?>"
+				value="<?php echo !$pwe_shortcodes_available ? get_option($option_name) : "" ?>"
 			/>
-			<p><?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : $placeholder; ?></p>
+			<p>
+				<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : $placeholder; ?>
+			</p>
 		</div>
 		<?php
 	}
@@ -1005,21 +1012,31 @@ function connectToDatabase($fair_name) {
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function display_trade_fair_datetotimer() {
-		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$current_time = strtotime("now");
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ""
+			: $start_date;
+
 		// Check if the result is in YYYY/MM/DD format (10 characters)
-		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
-			$result .= " 10:00"; // Add hour 10:00
+		if (is_string($date) && preg_match('/^\d{4}[\/-]\d{2}[\/-]\d{2}$/', $date)) {
+			$date .= " 10:00"; // Add hour 10:00
 		}
+
+		$option_name = "trade_fair_datetotimer";
+
 		?>
 			<div class="form-field">
 				<input 
-					<?php echo $pwe_date_start_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
-					type="text" 
-					name="trade_fair_datetotimer" 
-					id="trade_fair_datetotimer" 
-					value="<?php echo $result ?>" 
+					<?php echo $pwe_shortcodes_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text"
+					name="<?php echo $option_name; ?>"
+					id="<?php echo $option_name; ?>"
+					placeholder="<?php echo $pwe_shortcodes_available ? $date : get_option($option_name) ?>"
+					value="<?php echo !$pwe_shortcodes_available ? get_option($option_name) : "" ?>"
 				/>
 				<p><?php echo $pwe_date_start_available ? "Dane pobrane z CAP DB" : "2025/10/14 10:00 (Y:M:D H:M)"; ?></p>
 			</div>
@@ -1028,21 +1045,31 @@ function connectToDatabase($fair_name) {
 	
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function display_trade_fair_enddata() {
-		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
-		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$current_time = strtotime("now");
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ""
+			: $end_date;
+
 		// Check if the result is in YYYY/MM/DD format (10 characters)
-		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
-			$result .= " 17:00"; // Add hour 17:00
+		if (is_string($date) && preg_match('/^\d{4}[\/-]\d{2}[\/-]\d{2}$/', $date)) {
+			$date .= " 17:00"; // Add hour 17:00
 		}
+
+		$option_name = "trade_fair_enddata";
+
 		?>
 			<div class="form-field">
 				<input 
-					<?php echo $pwe_date_end_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?>  
-					type="text" 
-					name="trade_fair_enddata" 
-					id="trade_fair_enddata" 
-					value="<?php echo $result ?>" 
+					<?php echo $pwe_shortcodes_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text"
+					name="<?php echo $option_name; ?>"
+					id="<?php echo $option_name; ?>"
+					placeholder="<?php echo $pwe_shortcodes_available ? $date : get_option($option_name) ?>"
+					value="<?php echo !$pwe_shortcodes_available ? get_option($option_name) : "" ?>"
 				/>
 				<p><?php echo $pwe_date_end_available ? "Dane pobrane z CAP DB" : "2025/10/16 10:00 (Y:M:D H:M)"; ?></p>
 			</div>
@@ -1051,23 +1078,31 @@ function connectToDatabase($fair_name) {
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function display_trade_fair_date_custom_format() {
-		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
 
-		$result = ($pwe_date_start_available && $pwe_date_end_available) ? PWECommonFunctions::transform_dates($pwe_date_start, $pwe_date_end, false) : get_option('trade_fair_date_custom_format');
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$new_date_comming_soon = "Nowa data wkrótce / New date comming soon";
+
+		$current_time = strtotime("now");
+
+		$custom_date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? $new_date_comming_soon
+			: PWECommonFunctions::transform_dates($start_date, $end_date, false);
+
+		$option_name = "trade_fair_date_custom_format";
+		$placeholder = "14-16|10|2025 (D-D|M|Y)";
 		
 		?>
 			<div class="form-field">
-				<input 
-					<?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
-					type="text" 
-					name="trade_fair_date_custom_format" 
-					id="trade_fair_date_custom_format" 
-					value="<?php echo $result ?>" 
+				<input
+					<?php echo $pwe_shortcodes_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text"
+					name="<?php echo $option_name; ?>"
+					id="<?php echo $option_name; ?>"
+					placeholder="<?php echo $pwe_shortcodes_available ? $custom_date : get_option($option_name) ?>"
+					value="<?php echo !$pwe_shortcodes_available ? get_option($option_name) : "" ?>"
 				/>
-				<p><?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : "14-16|10|2025 (D-D|M|Y)"; ?></p>	
+				<p><?php echo ($pwe_date_start_available && $pwe_date_end_available) ? "Dane pobrane z CAP DB" : $placeholder; ?></p>
 			</div>
         <?php
 	}
@@ -1094,7 +1129,7 @@ function connectToDatabase($fair_name) {
     function display_trade_fair_catalog_year()
 	{
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
 		?>
 			<div class="form-field">
@@ -1134,7 +1169,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_1stbuildday()
     {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
         ?>
 			<div class="form-field">
@@ -1154,7 +1189,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_2ndbuildday()
     {
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ' 8:00-20:00') : get_option('trade_fair_2ndbuildday');
         ?>
 			<div class="form-field">
@@ -1174,7 +1209,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_1stdismantlday()
     {
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end));
 		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
         ?>
 			<div class="form-field">
@@ -1194,7 +1229,7 @@ function connectToDatabase($fair_name) {
 	function display_trade_fair_2nddismantlday()
     {
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end));
         $result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
 		?>
 			<div class="form-field">
@@ -1220,25 +1255,60 @@ function connectToDatabase($fair_name) {
         <?php
 	}
 
-	function display_trade_fair_branzowy()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_branzowy" id="trade_fair_branzowy" value="<?php echo get_option('trade_fair_branzowy'); ?>" />
-				<p>"wartość domyślna -> <?php echo get_option('trade_fair_date')?> "</p>
-			</div>
-        <?php
+	function display_trade_fair_branzowy_field($lang = "pl")
+	{
+		$pwe_shortcodes_available = empty(get_option("pwe_general_options", [])["pwe_dp_shortcodes_unactive"]);
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
+
+		$current_time = strtotime("now");
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$option_name = ($lang === "pl") ? "trade_fair_branzowy" : "trade_fair_branzowy_eng";
+		$placeholder = ($lang === "pl") ? "np. 15 grudnia 2020" : "e.g. December 15, 2020";
+
+		// no dates → immediate message
+		if (empty($start_date)) {
+			$industry_day = $new_date_comming_soon;
+		} else if (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time) {
+			$industry_day = $new_date_comming_soon;
+		} else {
+			if ($lang === "pl") {
+				setlocale(LC_TIME, "pl_PL.UTF-8");
+				$industry_day = strftime("%e %B %Y", strtotime($start_date));
+			} else {
+				$industry_day = date("F j, Y", strtotime($start_date)); // US format
+			}
+		}
+
+		?>
+		<div class="form-field">
+			<input
+				<?php echo $pwe_shortcodes_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?>
+				type="text"
+				name="<?php echo $option_name; ?>"
+				id="<?php echo $option_name; ?>"
+				placeholder="<?php echo $pwe_shortcodes_available ? $industry_day : "" ?>"
+				value="<?php echo $pwe_shortcodes_available ? $industry_day : get_option($option_name) ?>"
+			/>
+			<p>
+				<?php
+				echo $pwe_shortcodes_available ? "Dane pobrane z CAP DB" : $placeholder;
+				?>
+			</p>
+		</div>
+		<?php
 	}
 
-	function display_trade_fair_branzowy_eng()
-    {
-        ?>
-			<div class="form-field">
-				<input type="text" name="trade_fair_branzowy_eng" id="trade_fair_branzowy_eng" value="<?php echo get_option('trade_fair_branzowy_eng'); ?>" />
-				<p>"wartość domyślna -> <?php echo get_option('trade_fair_date_eng')?> "</p>
-			</div>
-        <?php
+	function display_trade_fair_branzowy() {
+		display_trade_fair_branzowy_field("pl");
 	}
+
+	function display_trade_fair_branzowy_eng() {
+		display_trade_fair_branzowy_field("en");
+	}
+
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function display_trade_fair_edition()
@@ -1831,41 +1901,60 @@ function connectToDatabase($fair_name) {
 	// datetotimer
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_datetotimer(){
-		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$result = $pwe_date_start_available ? $pwe_date_start : get_option('trade_fair_datetotimer');
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$current_time = strtotime("now");
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ($pwe_shortcodes_available ? "" : get_option('trade_fair_datetotimer'))
+			: $start_date;
+
 		// Check if the result is in YYYY/MM/DD format (10 characters)
-		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
-			$result .= " 10:00"; // Add hour 10:00
+		if (is_string($date) && preg_match('/^\d{4}[\/-]\d{2}[\/-]\d{2}$/', $date)) {
+			$date .= " 10:00"; // Add hour 10:00
 		}
-		return $result;
+
+		return $date;
 	}
 	add_shortcode( 'trade_fair_datetotimer', 'show_trade_fair_datetotimer' );
 
-     
 	// enddata
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_enddata(){
-		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
-		$result = $pwe_date_end_available ? $pwe_date_end : get_option('trade_fair_enddata');
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$current_time = strtotime("now");
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ($pwe_shortcodes_available ? "" : get_option('trade_fair_enddata'))
+			: $end_date;
+
 		// Check if the result is in YYYY/MM/DD format (10 characters)
-		if (is_string($result) && preg_match('/^\d{4}\/\d{2}\/\d{2}$/', $result)) {
-			$result .= " 17:00"; // Add hour 17:00
+		if (is_string($date) && preg_match('/^\d{4}[\/-]\d{2}[\/-]\d{2}$/', $date)) {
+			$date .= " 17:00"; // Add hour 10:00
 		}
-		return $result;
+
+		return $date;
 	}
 	add_shortcode( 'trade_fair_enddata', 'show_trade_fair_enddata' );
 
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_date_custom_format(){
-		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
-		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
 
-		$result = ($pwe_date_start_available && $pwe_date_end_available) ? PWECommonFunctions::transform_dates($pwe_date_start, $pwe_date_end, false) : get_option('trade_fair_date_custom_format');
-		return $result;
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+		$current_time = strtotime("now");
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ($pwe_shortcodes_available ? $new_date_comming_soon : get_option('trade_fair_date_custom_format'))
+			:  PWECommonFunctions::transform_dates($start_date, $end_date, false);
+
+		return $date;
 	}
 	add_shortcode( 'trade_fair_date_custom_format', 'show_trade_fair_date_custom_format' );
 
@@ -1881,7 +1970,7 @@ function connectToDatabase($fair_name) {
 
     function show_trade_fair_catalog_year(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? date('Y', strtotime($pwe_date_start)) : get_option('trade_fair_catalog_year');
 		return $result;
 	}
@@ -1911,7 +2000,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_1stbuildday(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -2 day')) . ' 8:00-18:00') : get_option('trade_fair_1stbuildday');	
 		
 		return $result;
@@ -1922,7 +2011,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_2ndbuildday(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
-		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start) && $pwe_date_start !== "");
+		$pwe_date_start_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_start));
 		$result = $pwe_date_start_available ? (date('d.m.Y', strtotime($pwe_date_start . ' -1 day')) . ' 8:00-20:00') : get_option('trade_fair_2ndbuildday');	
 		
 		return $result;
@@ -1933,7 +2022,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_1stdismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end));
 		// if (!empty(get_option('trade_fair_1nddismantlday'))) {
 		// 	$result = get_option('trade_fair_1nddismantlday');
 		// } else {
@@ -1947,7 +2036,7 @@ function connectToDatabase($fair_name) {
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_2nddismantlday(){
 		$pwe_date_end = shortcode_exists("pwe_date_end") ? do_shortcode('[pwe_date_end]') : "";
-		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end) && $pwe_date_end !== "");
+		$pwe_date_end_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_date_end));
 		// if (!empty(get_option('trade_fair_2nddismantlday'))) {
 		// 	$result = get_option('trade_fair_2nddismantlday');
 		// } else {
@@ -1961,24 +2050,37 @@ function connectToDatabase($fair_name) {
 	// Date of the fair
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_date() {
-		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
 		$current_time = strtotime("now");
-		$trade_fair_date = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "pl") : get_option('trade_fair_date');
-		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? (!empty(get_option('trade_fair_date')) ? get_option('trade_fair_date') : "Nowa data wkrótce") : $trade_fair_date;
-		return $result;
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ($pwe_shortcodes_available ? $new_date_comming_soon : get_option('trade_fair_date'))
+			:  format_trade_fair_date($start_date, $end_date, "pl");
+
+		return $date;
 	}
-	add_shortcode( 'trade_fair_date', 'show_trade_fair_date' );
+	add_shortcode('trade_fair_date', 'show_trade_fair_date');
+
 
 	// Date of the fair ENG
 	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
 	function show_trade_fair_date_eng() {
-		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available) = get_trade_fair_dates();
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$lang = strtolower(ICL_LANGUAGE_CODE);
 		$current_time = strtotime("now");
-		$trade_fair_date_eng = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && ($pwe_date_start_available && $pwe_date_end_available)) ? format_trade_fair_date($start_date, $end_date, $lang = "en") : get_option('trade_fair_date_eng');
-		$result = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time)) ? (!empty(get_option('trade_fair_date_eng')) ? get_option('trade_fair_date_eng') : "New date comming soon") : $trade_fair_date_eng;
-		return $result;
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon";
+
+		$date = (empty($start_date) || (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time))
+			? ($pwe_shortcodes_available ? $new_date_comming_soon : get_option('trade_fair_date_eng'))
+			:  format_trade_fair_date($start_date, $end_date, "en");
+
+		return $date;
 	}
-	add_shortcode( 'trade_fair_date_eng', 'show_trade_fair_date_eng' );
+	add_shortcode('trade_fair_date_eng', 'show_trade_fair_date_eng');
 
 	// Date of the fair RU
 	function show_trade_fair_date_ru(){
@@ -2063,25 +2165,54 @@ function connectToDatabase($fair_name) {
 	}
 	add_shortcode( 'trade_fair_main2', 'show_trade_fair_main2' );
 
-	/*dzien branzowy*/
-	function show_trade_fair_branzowy(){
-		$result = get_option('trade_fair_branzowy');
+	function trade_fair_branzowy_result($lang = "pl") {
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		$new_date_comming_soon = ($lang === "pl") ? "Nowa data wkrótce" : "New date comming soon"; 
+		$current_time = strtotime("now");
+
+		// no dates → immediate message
+		if (empty($start_date)) {
+			return $new_date_comming_soon;
+		}
+
+		// end date expired → message
+		if (!empty($end_date) && (strtotime($end_date . " +20 hours")) < $current_time) {
+			return $new_date_comming_soon;
+		}
+
+		// correct date → we format only the first day
+		if ($lang === "pl") {
+			setlocale(LC_TIME, "pl_PL.UTF-8");
+			$industry_day = strftime("%e %B %Y", strtotime($start_date));
+		} else {
+			$industry_day = date("F j, Y", strtotime($start_date)); // US format
+		}
+
+		return $pwe_shortcodes_available ? $industry_day : (($lang === "pl") ? get_option('trade_fair_branzowy') : get_option('trade_fair_branzowy_eng'));
+	}
+
+	/* dzień branżowy */
+	function show_trade_fair_branzowy() {
+		$result = trade_fair_branzowy_result("pl");
+
 		if (empty($result)) {
 			return get_option('trade_fair_date');
 		}
 		return $result;
 	}
-	add_shortcode( 'trade_fair_branzowy', 'show_trade_fair_branzowy' );
+	add_shortcode('trade_fair_branzowy', 'show_trade_fair_branzowy');
 
-	/*dzien branzowy ENG*/
-	function show_trade_fair_branzowy_eng(){
-		$result = get_option('trade_fair_branzowy_eng');
+	/* dzień branżowy ENG */
+	function show_trade_fair_branzowy_eng() {
+		$result = trade_fair_branzowy_result("en");
+
 		if (empty($result)) {
-			$result = get_option('trade_fair_date_eng');
+			return get_option('trade_fair_date_eng');
 		}
 		return $result;
 	}
-	add_shortcode( 'trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng' );
+	add_shortcode('trade_fair_branzowy_eng', 'show_trade_fair_branzowy_eng');
 
 	/*początek badge*/
 	function show_trade_fair_badge(){
