@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.6
+Version: 7.0.7
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -1834,6 +1834,9 @@ function connectToDatabase($fair_name) {
 		$pwe_name_pl = shortcode_exists("pwe_name_pl") ? do_shortcode('[pwe_name_pl]') : "";
 		$pwe_name_pl_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_pl) && $pwe_name_pl !== "");
 		$result = $pwe_name_pl_available ? $pwe_name_pl : get_option('trade_fair_name');
+
+		$result = html_entity_decode($result, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
 		return $result;
 	}
 	add_shortcode( 'trade_fair_name', 'show_trade_fair_name' );
@@ -1845,6 +1848,9 @@ function connectToDatabase($fair_name) {
         $pwe_name_en = !empty($pwe_name_en) ? $pwe_name_en : $pwe_name_pl; 
 		$pwe_name_en_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_name_en) && $pwe_name_en !== "");
 		$result = $pwe_name_en_available ? $pwe_name_pl : get_option('trade_fair_name_eng');
+
+		$result = html_entity_decode($result, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+		
 		return $result;
 	}
 	add_shortcode( 'trade_fair_name_eng', 'show_trade_fair_name_eng' );
@@ -2877,11 +2883,12 @@ function connectToDatabase($fair_name) {
 		);
 
 		// Loop through each merge tag and replace it in the text
-		foreach ($merge_tags as $tag => $replacement) {
-			if ( strpos($text, $tag) !== false ) {
-				$text = str_replace($tag, $replacement, $text);
-			}
+		foreach ($merge_tags as $tag => $replacement) { 
+			if ( strpos($text, $tag) !== false ) { 
+				$text = str_replace($tag, $replacement, $text); 
+			} 
 		}
+
 		return $text;
 	}
 
