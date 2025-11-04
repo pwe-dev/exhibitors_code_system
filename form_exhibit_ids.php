@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.0.8
+Version: 7.0.9
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -355,6 +355,9 @@ function connectToDatabase($fair_name) {
 		add_settings_field("trade_fair_catalog", "Numer aktualnych targów do katalogu wystawców<hr><p class='half-tab-code-system' >Wpisz numer targów expo-planu <br>[trade_fair_catalog]</p>", "display_trade_fair_catalog", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_catalog");
 
+		add_settings_field("trade_fair_catalog_id", "ID katalogu wystawców (NEW)<hr><p class='half-tab-code-system' >Shortcode <br>[trade_fair_catalog_id]</p>", "display_trade_fair_catalog_id", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_catalog_id");
+
         add_settings_field("trade_fair_catalog_year", "Data do aktualnego katalogu wystawców<hr><p class='half-tab-code-system' >Wpisz rok który będzie się wyświetlał w nagłówkach <br>[trade_fair_catalog_year]</p>", "display_trade_fair_catalog_year", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_catalog_year");
 		/*END */
@@ -560,6 +563,9 @@ function connectToDatabase($fair_name) {
 
 		add_settings_field("trade_fair_contact_tech", "Adres email do formularza kontaktu działu technicznego<hr><p>[trade_fair_contact_tech]</p>", "display_trade_fair_contact_tech", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_contact_tech");
+
+		add_settings_field("trade_fair_contact_media", "Adres email do formularza kontaktu działu marketingowego i media<hr><p>[trade_fair_contact_media]</p>", "display_trade_fair_contact_media", "code-checker", "code_checker");      
+		register_setting("code_checker", "trade_fair_contact_media");
 
 		add_settings_field("trade_fair_lidy", "Adres email do wysyłania lidów<hr><p>[trade_fair_lidy]</p>", "display_trade_fair_lidy", "code-checker", "code_checker");      
 		register_setting("code_checker", "trade_fair_lidy");
@@ -1129,6 +1135,25 @@ function connectToDatabase($fair_name) {
 		<?php
 	}
 
+	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
+	function display_trade_fair_catalog_id()
+	{
+		$pwe_catalog_id = shortcode_exists("pwe_catalog_id") ? do_shortcode('[pwe_catalog_id]') : "";
+		$pwe_catalog_id_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog_id) && $pwe_catalog_id !== "");
+		?>
+			<div class="form-field">
+				<input 	
+					<?php echo $pwe_catalog_id_available ? "style='pointer-events: none; opacity: 0.5;'" : ""; ?> 
+					type="text" 
+					name="trade_fair_catalog_id" 
+					id="trade_fair_catalog_id" 
+					value="<?php echo $pwe_catalog_id_available ? $pwe_catalog_id : get_option('trade_fair_catalog_id'); ?>" 
+				/>
+				<p><?php echo $pwe_catalog_id_available ? "Dane pobrane z CAP DB" : "np. 69"; ?></p>
+			</div>
+		<?php
+	}
+
     function display_trade_fair_catalog_year()
 	{
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
@@ -1564,6 +1589,42 @@ function connectToDatabase($fair_name) {
 					value="<?php echo get_option('trade_fair_contact_tech'); ?>"
 				/>
 				<p>"wartość domyślna -> <?php echo !empty($tech_email) ? $tech_email : ''; ?>"</p>
+			</div>
+        <?php
+	}
+
+	function display_trade_fair_contact_media() 
+    {
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "ob-marketing-media") {
+								$media_contact_data = json_decode($group_contact->groups_data);
+								$media_email = trim($media_contact_data->email);
+							}
+						} 
+					}
+				}
+			} 
+		}
+
+        ?>
+			<div class="form-field full-tab-code-system">
+				<input 
+					type="text" 
+					name="trade_fair_contact_media" 
+					id="trade_fair_contact_media" 
+					value="<?php echo get_option('trade_fair_contact_media'); ?>"
+				/>
+				<p>"wartość domyślna -> <?php echo !empty($media_email) ? $media_email : ''; ?>"</p>
 			</div>
         <?php
 	}
@@ -2012,6 +2073,15 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_catalog', 'show_trade_fair_catalog' );
+
+	// Added option from CAP DB <-------------------------------------------------------------------------------------------------<
+	function show_trade_fair_catalog_id(){
+		$pwe_catalog_id = shortcode_exists("pwe_catalog_id") ? do_shortcode('[pwe_catalog_id]') : "";
+		$pwe_catalog_id_available = (empty(get_option('pwe_general_options', [])['pwe_dp_shortcodes_unactive']) && !empty($pwe_catalog_id) && $pwe_catalog_id !== "");
+		$result = $pwe_catalog_id_available ? $pwe_catalog_id : get_option('trade_fair_catalog_id');
+		return $result;
+	}
+	add_shortcode( 'trade_fair_catalog_id', 'show_trade_fair_catalog_id' );
 
     function show_trade_fair_catalog_year(){
 		$pwe_date_start = shortcode_exists("pwe_date_start") ? do_shortcode('[pwe_date_start]') : "";
@@ -2496,6 +2566,36 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_contact_tech', 'show_trade_fair_contact_tech' );
+
+	// Email kontaktu do działu marketingu i media
+	function show_trade_fair_contact_media(){
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+        $pwe_groups_contacts_data = PWECommonFunctions::get_database_groups_contacts_data();  
+
+        // Get domain address
+        $current_domain = $_SERVER['HTTP_HOST'];
+		$result = '';
+
+		if (!empty($pwe_groups_data) && !empty($pwe_groups_contacts_data)) {
+			foreach ($pwe_groups_data as $group) {
+				if ($current_domain == $group->fair_domain) {
+					foreach ($pwe_groups_contacts_data as $group_contact) {
+						if ($group->fair_group == $group_contact->groups_name) {
+							if ($group_contact->groups_slug == "ob-marketing-media") {
+								$media_contact_data = json_decode($group_contact->groups_data);
+								$media_email = trim($media_contact_data->email);
+							}
+						} 
+					}
+				}
+			}
+		}
+
+		$result = !empty($media_email) ? $media_email : get_option('trade_fair_contact_media');
+
+		return $result;
+	}
+	add_shortcode( 'trade_fair_contact_media', 'show_trade_fair_contact_media' );
 
 	function show_trade_fair_lidy(){
 		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
