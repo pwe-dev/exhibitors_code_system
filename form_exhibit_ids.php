@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.1.0
+Version: 7.1.1
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -918,34 +918,134 @@ function connectToDatabase($fair_name) {
 	function format_trade_fair_date($start_date, $end_date, $lang = "pl") {
 		$months = [
 			"pl" => [
-				"01" => "stycznia", 
-				"02" => "lutego", 
-				"03" => "marca", 
+				"01" => "stycznia",
+				"02" => "lutego",
+				"03" => "marca",
 				"04" => "kwietnia",
-				"05" => "maja", 
-				"06" => "czerwca", 
-				"07" => "lipca", 
+				"05" => "maja",
+				"06" => "czerwca",
+				"07" => "lipca",
 				"08" => "sierpnia",
-				"09" => "września", 
-				"10" => "października", 
-				"11" => "listopada", 
+				"09" => "września",
+				"10" => "października",
+				"11" => "listopada",
 				"12" => "grudnia",
 			],
 			"en" => [
-				"01" => "January", 
-				"02" => "February", 
-				"03" => "March", 
-				"04" => "April",
-				"05" => "May", 
-				"06" => "June", 
-				"07" => "July", 
-				"08" => "August",
-				"09" => "September", 
-				"10" => "October", 
-				"11" => "November", 
-				"12" => "December",
+				"01" => "january",
+				"02" => "february",
+				"03" => "march",
+				"04" => "april",
+				"05" => "may",
+				"06" => "june",
+				"07" => "july",
+				"08" => "august",
+				"09" => "september",
+				"10" => "october",
+				"11" => "november",
+				"12" => "december",
+			],
+			"de" => [
+				"01" => "januar",
+				"02" => "februar",
+				"03" => "märz",
+				"04" => "april",
+				"05" => "mai",
+				"06" => "juni",
+				"07" => "juli",
+				"08" => "august",
+				"09" => "september",
+				"10" => "oktober",
+				"11" => "november",
+				"12" => "dezember",
+			],
+			"lt" => [
+				"01" => "sausio",
+				"02" => "vasario",
+				"03" => "kovo",
+				"04" => "balandžio",
+				"05" => "gegužės",
+				"06" => "birželio",
+				"07" => "liepos",
+				"08" => "rugpjūčio",
+				"09" => "rugsėjo",
+				"10" => "spalio",
+				"11" => "lapkričio",
+				"12" => "gruodžio",
+			],
+			"lv" => [
+				"01" => "janvāris",
+				"02" => "februāris",
+				"03" => "marts",
+				"04" => "aprīlis",
+				"05" => "maijs",
+				"06" => "jūnijs",
+				"07" => "jūlijs",
+				"08" => "augusts",
+				"09" => "septembris",
+				"10" => "oktobris",
+				"11" => "novembris",
+				"12" => "decembris",
+			],
+			"uk" => [
+				"01" => "січня",
+				"02" => "лютого",
+				"03" => "березня",
+				"04" => "квітня",
+				"05" => "травня",
+				"06" => "червня",
+				"07" => "липня",
+				"08" => "серпня",
+				"09" => "вересня",
+				"10" => "жовтня",
+				"11" => "листопада",
+				"12" => "грудня",
+			],
+			"cs" => [
+				"01" => "ledna",
+				"02" => "února",
+				"03" => "března",
+				"04" => "dubna",
+				"05" => "května",
+				"06" => "června",
+				"07" => "července",
+				"08" => "srpna",
+				"09" => "září",
+				"10" => "října",
+				"11" => "listopadu",
+				"12" => "prosince",
+			],
+			"sk" => [
+				"01" => "januára",
+				"02" => "februára",
+				"03" => "marca",
+				"04" => "apríla",
+				"05" => "mája",
+				"06" => "júna",
+				"07" => "júla",
+				"08" => "augusta",
+				"09" => "septembra",
+				"10" => "októbra",
+				"11" => "novembra",
+				"12" => "decembra",
+			],
+			"ru" => [
+				"01" => "января",
+				"02" => "февраля",
+				"03" => "марта",
+				"04" => "апреля",
+				"05" => "мая",
+				"06" => "июня",
+				"07" => "июля",
+				"08" => "августа",
+				"09" => "сентября",
+				"10" => "октября",
+				"11" => "ноября",
+				"12" => "декабря",
 			]
 		];
+
+		$lang_key = strtoupper($lang);
 	
 		$start_parts = explode("/", $start_date);
 		$end_parts = explode("/", $end_date);
@@ -957,27 +1057,60 @@ function connectToDatabase($fair_name) {
 		$end_day = intval($end_parts[2]);
 		$end_month = $end_parts[1];
 		$end_year = $end_parts[0];
+
+		$year = $start_year;
 	
 		$start_month_name = $months[$lang][$start_month] ?? "";
 		$end_month_name = $months[$lang][$end_month] ?? "";
 	
-		// Same day
-		if ($start_date === $end_date) {
-			return ($lang === "pl") ? "$start_day $start_month_name $start_year" : "$start_month_name $start_day, $start_year";
+		switch ($lang_key) {
+
+			case "PL":
+			case "UK":
+			case "RU":
+				if ($start_month === $end_month) {
+					return "$start_day - $end_day $start_month_name $year";
+				}
+				return "$start_day $start_month_name - $end_day $end_month_name $year";
+
+			case "EN":
+				if ($start_month === $end_month) {
+					return "$start_month_name $start_day-$end_day, $year";
+				}
+				return "$start_month_name $start_day - $end_month_name $end_day, $year";
+
+			case "DE":
+			case "CS":
+				if ($start_month === $end_month) {
+					return "$start_day.-$end_day. $start_month_name $year";
+				}
+				return "$start_day. $start_month_name - $end_day. $end_month_name $year";
+
+			case "SK":
+				if ($start_month === $end_month) {
+					return "$start_day. - $end_day. $start_month_name $year";
+				}
+				return "$start_day. $start_month_name - $end_day. $end_month_name $year";
+
+			case "LV":
+				if ($start_month === $end_month) {
+					return "$start_day. - $end_day. $start_month_name $year";
+				}
+				return "$start_day. $start_month_name - $end_day. $end_month_name $year";
+
+			case "LT":
+				if ($start_month === $end_month) {
+					return "$year m. $start_month_name $start_day-$end_day d.";
+				}
+				return "$year m. $start_month_name $start_day d. - $end_month_name $end_day d.";
+
+			default:
+				// fallback EN
+				if ($start_month === $end_month) {
+					return "$start_month_name $start_day-$end_day, $year";
+				}
+				return "$start_month_name $start_day - $end_month_name $end_day, $year";
 		}
-	
-		// Same month and year
-		if ($start_month === $end_month && $start_year === $end_year) {
-			return ($lang === "pl") ? "$start_day - $end_day $start_month_name $start_year" : "$start_month_name $start_day-$end_day, $start_year";
-		}
-	
-		// Different months, same year
-		if ($start_year === $end_year) {
-			return ($lang === "pl") ? "$start_day $start_month_name - $end_day $end_month_name $start_year" : "$start_month_name $start_day - $end_month_name $end_day, $start_year";
-		}
-	
-		// Different years
-		return ($lang === "pl") ? "$start_day $start_month_name $start_year - $end_day $end_month_name $end_year" : "$start_month_name $start_day, $start_year - $end_month_name $end_day, $end_year";
 	}
 
 	function display_trade_fair_date_field($lang = "pl") {
@@ -2203,6 +2336,44 @@ function connectToDatabase($fair_name) {
 		return $result;
 	}
 	add_shortcode( 'trade_fair_date_ru', 'show_trade_fair_date_ru' );
+
+
+
+
+	// SHORTCODE: trade_fair_date_multilang
+	function show_trade_fair_date_multilang() {
+		list($start_date, $end_date, $pwe_date_start_available, $pwe_date_end_available, $pwe_shortcodes_available) = get_trade_fair_dates();
+
+		// WPML language e.g. pl, en etc.
+		$lang = strtolower(ICL_LANGUAGE_CODE);
+
+		$current_time = strtotime("now");
+
+		// translations "nowa data wkrótce"
+		switch ($lang) {
+			case "pl": $new_date_coming_soon = "Nowa data wkrótce"; break;
+			case "en": $new_date_coming_soon = "New date coming soon"; break;
+			case "de": $new_date_coming_soon = "Neuer Termin folgt in Kürze"; break;
+			case "lt": $new_date_coming_soon = "Nauja data netrukus"; break;
+			case "lv": $new_date_coming_soon = "Jauns datums drīzumā"; break;
+			case "uk": $new_date_coming_soon = "Нова дата незабаром"; break;
+			case "cs": $new_date_coming_soon = "Nový termín již brzy"; break;
+			case "sk": $new_date_coming_soon = "Nový termín už čoskoro"; break;
+			case "ru": $new_date_coming_soon = "Новая дата скоро"; break;
+			default: $new_date_coming_soon = "New date coming soon"; break;
+		}
+
+		$date =
+			(empty($start_date) || (!empty($end_date) && strtotime($end_date . " +20 hours") < $current_time))
+				? ($pwe_shortcodes_available ? $new_date_coming_soon : get_option('trade_fair_date_'.$lang))
+				: format_trade_fair_date($start_date, $end_date, $lang);
+
+		return $date;
+	}
+
+	add_shortcode('trade_fair_date_multilang', 'show_trade_fair_date_multilang');
+
+
 	
 	 
 	/*nr edycji*/
