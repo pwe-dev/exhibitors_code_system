@@ -2,7 +2,7 @@
 /*
 Plugin Name: Exhibitors Code System 
 Description: Wtyczka umożliwiająca generowanie kodów zaproszeniowych dla wystawców oraz tworzenie 'reflinków'.
-Version: 7.1.1
+Version: 7.1.2
 Author: pwe-dev (s)
 Author URI: https://github.com/pwe-dev
 */
@@ -192,74 +192,37 @@ class PageTemplater {
 add_action( 'plugins_loaded', array( 'PageTemplater', 'get_instance' ) );
 
 function connectToDatabase($fair_name) {
-    // $databases = [
-    //     [
-    //         'host' => 'localhost',
-    //         'name' => 'warsawexpo_dodatkowa',
-    //         'user' => 'warsawexpo_admin-dodatkowy',
-    //         'password' => 'N4c-TsI+I4-C56@q'
-    //     ],
-    //     [
-    //         'host' => 'localhost',
-    //         'name' => 'automechanicawar_dodatkowa',
-    //         'user' => 'automechanicawar_admin-dodatkowa',
-    //         'password' => '9tL-2-88UAnO_x2e'
-    //     ]
-    // ];
-    // if ($_SERVER['SERVER_ADDR'] != '94.152.207.180') {
-    //     $custom_db = new wpdb($databases[0]['user'], $databases[0]['password'], $databases[0]['name'], $databases[0]['host']);
-        
-    //     if (empty($custom_db->error)) {
-    //         $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
-    //         $results = $custom_db->get_results($prepared_query);
-            
-    //         if (!empty($results)) {
-    //             return $results[0]->fair_kw;
-    //         } else {
-    //             echo '<script>console.log("No results found for the given fair name.")</script>';
-    //             return null;
-    //         }
-    //     } else {
-    //         echo '<script>console.log("'.$custom_db->error.'")</script>';
-    //     }
-    // } else {
-	// 	$custom_db = new wpdb($databases[1]['user'], $databases[1]['password'], $databases[1]['name'], $databases[1]['host']);
-	// 	// echo '<pre style="width:500px;">';
-    //     // var_dump($custom_db);
-	// 	// echo '<pre>';
-    //     if (empty($custom_db->error)) {
-    //         $prepared_query = $custom_db->prepare("SELECT fair_kw FROM fairs WHERE fair_name = %s", $fair_name);
-    //         $results = $custom_db->get_results($prepared_query);
-
-    //         if (!empty($results)) {
-    //             return $results[0]->fair_kw;
-    //         } else {
-    //             echo '<script>console.log("No results found for the given fair name.")</script>';
-    //             return null;
-    //         }
-    //     } else {
-    //         //var_dump($custom_db->error);
-    //     }
-	// }
     
-    // echo '<script>console.log("Failed to connect to all databases.")</script>';
     return null;
 }
 
 
-    function add_new_menu_items()
-    {
-        add_menu_page(
-            "Exhibitors Code System Settings",
-            "Exhibitors Code System Settings",
-            "manage_options",
-            "code-maker",
-            "theme_options_page",
-            plugins_url('icon_small.png', __FILE__) ,
-            100
-        );
+    // function add_new_menu_items()
+    // {
+    //     add_menu_page(
+    //         "Exhibitors Code System Settings",
+    //         "Exhibitors Code System Settings",
+    //         "manage_options",
+    //         "code-maker",
+    //         "theme_options_page",
+    //         plugins_url('icon_small.png', __FILE__) ,
+    //         100
+    //     );
 
-    }
+    // }
+
+	function add_new_menu_items() {
+		add_submenu_page(
+			null, // brak rodzica = brak pozycji w menu
+			"Exhibitors Code System Settings",
+			"Exhibitors Code System Settings",
+			"manage_options",
+			"code-maker",
+			"theme_options_page"
+		);
+	}
+	add_action("admin_menu", "add_new_menu_items");
+
 
     function theme_options_page()
     {
@@ -340,6 +303,13 @@ function connectToDatabase($fair_name) {
     }
 
     add_action("admin_menu", "add_new_menu_items");
+
+	add_filter( 'plugin_action_links_' . plugin_basename(__FILE__), 'ecs_settings_link' );
+	function ecs_settings_link( $links ) {
+		$settings_link = '<a href="admin.php?page=code-maker">Ustawienia</a>';
+		array_unshift( $links, $settings_link );
+		return $links;
+	}
 
     function display_options()
     {	
@@ -1436,8 +1406,16 @@ function connectToDatabase($fair_name) {
 			$industry_day = $new_date_comming_soon;
 		} else {
 			if ($lang === "pl") {
-				setlocale(LC_TIME, "pl_PL.UTF-8");
-				$industry_day = strftime("%e %B %Y", strtotime($start_date));
+				// Replacing deprecated strftime
+				$formatter = new IntlDateFormatter(
+					'pl_PL',
+					IntlDateFormatter::LONG,
+					IntlDateFormatter::NONE,
+					'Europe/Warsaw',
+					IntlDateFormatter::GREGORIAN,
+					'd MMMM yyyy'
+				);
+				$industry_day = $formatter->format(new DateTime($start_date));
 			} else {
 				$industry_day = date("F j, Y", strtotime($start_date)); // US format
 			}
@@ -2469,8 +2447,16 @@ function connectToDatabase($fair_name) {
 
 		// correct date → we format only the first day
 		if ($lang === "pl") {
-			setlocale(LC_TIME, "pl_PL.UTF-8");
-			$industry_day = strftime("%e %B %Y", strtotime($start_date));
+			// Replacing deprecated strftime
+            $formatter = new IntlDateFormatter(
+                'pl_PL',
+                IntlDateFormatter::LONG,
+                IntlDateFormatter::NONE,
+                'Europe/Warsaw',
+                IntlDateFormatter::GREGORIAN,
+                'd MMMM yyyy'
+            );
+            $industry_day = $formatter->format(new DateTime($start_date));
 		} else {
 			$industry_day = date("F j, Y", strtotime($start_date)); // US format
 		}
@@ -2798,7 +2784,7 @@ function connectToDatabase($fair_name) {
 	add_shortcode( 'trade_fair_lidy', 'show_trade_fair_lidy' );
 
 	function show_trade_fair_group(){
-		$pwe_groups_data = PWECommonFunctions::get_database_groups_data(); 
+		$pwe_groups_data = PWECommonFunctions::get_database_groups_data();  
 
 		foreach ($pwe_groups_data as $group) {
 			if ($_SERVER['HTTP_HOST'] == $group->fair_domain) {
@@ -3188,6 +3174,7 @@ function connectToDatabase($fair_name) {
 			'{trade_fair_desc_short_eng}' => show_trade_fair_desc_short_eng(),
 			'{trade_fair_datetotimer}' => show_trade_fair_datetotimer(),
 			'{trade_fair_enddata}' => show_trade_fair_enddata(),
+			'{trade_fair_date_multilang}' => show_trade_fair_date_multilang(),
 			'{trade_fair_catalog}' => show_trade_fair_catalog(),
 			'{trade_fair_catalog_year}' => show_trade_fair_catalog_year(),
 			'{trade_fair_conferance}' => show_trade_fair_conferance(),
